@@ -3,7 +3,7 @@
 # Mô hình và IP planning
 ### Mô hình
 
-<img src="..\images\OPS-3node-train.png">
+`<img src="..\images\OPS-3node-train.png">`
 
 ### IP planning
 
@@ -218,7 +218,7 @@ timedatectl set-timezone Asia/Ho_Chi_Minh
 
 Sửa file cấu hình:
 ```
-sed -i s'/0.centos.pool.ntp.org/10.10.32.130/'g /etc/chrony.conf
+sed -i s'/0.centos.pool.ntp.org/10.10.35.150/'g /etc/chrony.conf
 
 sed -i s'/server 1.centos.pool.ntp.org iburst/#server 1.centos.pool.ntp.org iburst/'g /etc/chrony.conf
 sed -i s'/server 2.centos.pool.ntp.org iburst/#server 2.centos.pool.ntp.org iburst/'g /etc/chrony.conf
