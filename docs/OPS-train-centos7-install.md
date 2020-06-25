@@ -405,7 +405,7 @@ Trong bài này, ta đặt password là `Welcome123`
 
 Sau khi xác thực bảo mật xong, ta truy cập db với user `root` với pass `Welcome123` thực hiện các lệnh sau:
 ```
-mysql -u root -p
+mysql -uroot -pWelcome123
 
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'10.10.31.166' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION;
 
@@ -1742,4 +1742,4 @@ systemctl restart memcached.service
 
 Truy cập vào trang chủ với địa chỉ `http://10.10.31.166` với user/pass: `admin`/`Welcome123`
 
-[Hướng dẫn sử dụng dashboard](.\HDSD_Dashboard.md)
+[Hướng dẫn sử dụng dashboard](./HDSD_Dashboard.md)
