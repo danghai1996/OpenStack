@@ -251,7 +251,7 @@ Kết quả như dưới đây là thành công (thể hiện ở dấu *)
 210 Number of sources = 1
 MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ===============================================================================
-^* 10.10.32.130                  5   6    17     3  -4123ns[ -147us] +/-   44ms
+^* 10.10.35.150                  5   6    17     2    -16us[ -287us] +/-   45ms
 ```
 
 #### 2.2.1. Cài đặt NTP trên 2 node compute
