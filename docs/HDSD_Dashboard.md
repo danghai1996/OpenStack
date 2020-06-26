@@ -157,7 +157,7 @@ Truy cập bằng thông tin: `cirros`/`gocubsgo`
 
 <img src="..\images\Screenshot_36.png">
 
-Kiểm tra IP và ping internet:
+Kiểm tra IP và kết nối internet:
 
 <img src="..\images\Screenshot_37.png">
 
