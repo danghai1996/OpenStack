@@ -3,7 +3,7 @@
 # Mô hình và IP planning
 ### Mô hình
 
-`<img src="..\images\OPS-3node-train.png">`
+<img src="..\images\OPS-3node-train.png">
 
 ### IP planning
 
