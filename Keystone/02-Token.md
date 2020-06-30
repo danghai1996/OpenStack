@@ -330,3 +330,17 @@ Với key và message nhận được, quá trình tạo fernet token như sau:
 - Tính toán trường HMAC theo mô tả trên sử dụng signing-key mà người dùng được cung cấp
 - Kết nối các trường theo đúng format token ở trên
 - Mã hóa base64 toàn bộ token
+
+### Token validation workflow
+<img src="..\images\Screenshot_58.png">
+
+- Gửi yêu cầu xác thực token với API GET v3/auth/tokens
+- Khôi phục lại padding, trả lại token với padding chính xác
+- Decrypt sử dụng Fernet Keys để thu lại token payload
+- Xác định phiên bản của token payload. (Unscoped token: 0, Domain scoped payload: 1, Project scoped payload: 2 )
+- Tách các trường của payload để chứng thực. Ví dụ với token trong tầm vực project gồm các trường sau: user id, project id, method, expiry, audit id
+- Kiểm tra xem token đã hết hạn chưa. Nếu thời điểm hiện tại lớn hơn so với thời điểm hết hạn thì trả về thông báo "Token not found". Nếu token chưa hết hạn thì chuyển sang bước tiếp theo
+- Kiểm tra xem token đã bị thu hồi chưa. Nếu token đã bị thu hồi (tương ứng với 1 sự kiện thu hồi trong bảng revocation_event của database keystone) thì trả về thông báo "Token not found". Nếu chưa bị thu hồi thì trả lại token (thông điệp phản hồi thành công HTTP/1.1 200 OK)
+
+### Multiple data centers
+Vì Fernet key không cần phải được lưu vào database nên nó có thể hỗ trợ multiple data center. Tuy nhiên keys sẽ phải được phân phối tới tất cả các regions.
