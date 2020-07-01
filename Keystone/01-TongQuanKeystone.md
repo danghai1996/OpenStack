@@ -78,7 +78,7 @@ Project và Domain đều có thể gán role. Từ đó sinh ra khái niệm ta
 - Nếu không có Catalog, users và các ứng dụng sẽ không thể biết được nơi cần chuyển yêu cầu để tạo máy ảo hoặc lưu dữ liệu.
 - Service này được chia nhỏ thành danh sách các endpoints và mỗi một endpoint sẽ chứa admin URL, internal URL, and public URL.
 
-# III. Identiry
+# III. Identity
 Identity service trong keystone cung cấp các Actors. Nó có thể tới từ nhiều dịch vụ khác nhau như SQL, LDAP, và Federated Identity Providers.
 
 ## 1. SQL
