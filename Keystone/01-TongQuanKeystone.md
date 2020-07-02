@@ -61,12 +61,16 @@ Mối quan hệt giữa domains, projects, users và groups:
 ## 4. Roles
 Roles được dùng để hiện thực hóa việc cấp phép trong keystone. Một actor có thể có nhiều roles đối với từng project khác nhau.
 
+Role được gán cho user và trên một project cụ thể ("assigned to" user, "assigned on" project)
+
 ## 5. Assignment
 - Role assignment gồm một Role, một Resource và một Identity.
 - Role assignment được cấp phát, thu hồi, và có thể được kế thừa giữa các users, groups, project và domains.
 
 ## 6. Targets
 Project và Domain đều có thể gán role. Từ đó sinh ra khái niệm target.
+
+Chính là project hoặc domain nào sẽ được gán Role cho user
 
 ## 7. Token
 - Để user truy cập bất cứ OpenStack API nào thì user cần chúng minh họ là ai và họ được phép gọi tới API. Để làm được điều này, họ cần có token và "dán" chúng vào "API call". Keystone chính là service chịu trách nhiệm tạo ra tokens.
