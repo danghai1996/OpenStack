@@ -445,61 +445,16 @@ openstack role show haidd
 
 2. Kiểm tra việc remove
     ```
-    openstack role list --user USER_NAME --project TENANT_ID
+    openstack role assignment list --user <user> --project <project_name|project_ID> --names
     ```
     Ví dụ
     ```
-    
+    openstack role assignment list --user test --project haidd --names
     ```
---------------
-
-### Tạo domain mới
-Cú pháp:
-```
-openstack domain create <tên_domain>
-```
-Ví dụ
-```
-openstack domain create haidd
-+-------------+----------------------------------+
-| Field       | Value                            |
-+-------------+----------------------------------+
-| description |                                  |
-| enabled     | True                             |
-| id          | a27d8bfb8135423c80fffff287757733 |
-| name        | haidd                            |
-| options     | {}                               |
-| tags        | []                               |
-+-------------+----------------------------------+
-```
-
-### Xem các role user đang có
-Cú pháp
-```
-openstack role assignment list --user <user> --name
-```
-Ví dụ:
-```
-openstack role assignment list --user haidd --name
-+-------+---------------+-------+---------------+--------+--------+-----------+
-| Role  | User          | Group | Project       | Domain | System | Inherited |
-+-------+---------------+-------+---------------+--------+--------+-----------+
-| admin | haidd@Default |       | haidd@Default |        |        | False     |
-| user  | haidd@Default |       | haidd@Default |        |        | False     |
-+-------+---------------+-------+---------------+--------+--------+-----------+
-```
-Xem thêm các tùy chọn [tại đây](https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/role-assignment.html)
-
-### Gán role
-Cú pháp
-```
-openstack role add --project <tên project> --project-domain <tên domain> --user <tên user> --user-domain <tên domain> <tên role>
-```
 
 
 
-
-# Tham khảo
+# Xem thêm
 1. https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/role-assignment.html
 2. https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/group.html
 3. https://docs.openstack.org/keystone/pike/admin/cli-manage-projects-users-and-roles.html
