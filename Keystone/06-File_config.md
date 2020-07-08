@@ -111,6 +111,8 @@ Bản Train -> đã bỏ
 |Option|Type|Mô tả|
 |------|----|-----|
 |`executor_thread_pool_size = 64`|integer|Kích thước của nhóm luồng thực thi khi thực thi là luồng hoặc sự kiện.|
+|`insecure_debug = false`|||
+
 
 --------
 ## Xem thêm
