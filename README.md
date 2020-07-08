@@ -22,7 +22,7 @@ Ghi chép tìm hiểu OpenStack
 
 [3. Tìm hiểu policy](.\Keystone\03-Policy.md)
 
-[4. Luồng làm việc cơ bản của Keystone](..\Keystone\04-workflow.md)
+[4. Luồng làm việc cơ bản của Keystone](../Keystone/04-workflow.md)
 
 [5. Các lệnh thường dùng trong Keystone](.\Keystone\05-KeystoneCommand.md)
 
