@@ -106,10 +106,11 @@ Bản Train -> đã bỏ
 |`list_limit = <None>`|integer|Số lượng thực thể tối đa được trả về trong catalog. Thông thường không có lý do để đặt điều này, vì sẽ là bất thường khi triển khai có đủ dịch vụ hoặc điểm cuối vượt quá giới hạn hợp lý|
 |`template_file = default_catalog.templates`|string|Catalog template file name để sử dụng với template catalog backend.|
 
-
-
-
-
+## 7. Common configuration options
+**[DEFAULT]**
+|Option|Type|Mô tả|
+|------|----|-----|
+|`executor_thread_pool_size = 64`|integer|Kích thước của nhóm luồng thực thi khi thực thi là luồng hoặc sự kiện.|
 
 --------
 ## Xem thêm
