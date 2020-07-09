@@ -27,3 +27,5 @@ Ghi chép tìm hiểu OpenStack
 [5. Các lệnh thường dùng trong Keystone](./Keystone/05-KeystoneCommand.md)
 
 [6. File cấu hình trong Keystone](./Keystone/06-File_config.md)
+
+[7. File log của Keystone](./Keystone/07-file_log.md)
