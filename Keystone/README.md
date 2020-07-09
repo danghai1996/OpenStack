@@ -12,3 +12,5 @@
 [5. Các lệnh thường dùng trong Keystone](./05-KeystoneCommand.md)
 
 [6. File cấu hình trong Keystone](./06-File_config.md)
+
+[7. File log của Keystone](./07-file_log.md)
