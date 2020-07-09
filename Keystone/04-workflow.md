@@ -2,7 +2,6 @@
 
 <img src="..\images\Screenshot_59.png">
 
-
 1. User muốn truy cập server vào hệ thống:
     - User gửi thông tin đăng nhập (username và mật khẩu) tới Keystone
     - Keystone kiểm tra thông tin đăng nhập. Đúng sẽ gửi lại một Temporary Token (được sinh ra từ thông tin đăng nhập của User) và Generic catalog (danh mục chung) cho User
