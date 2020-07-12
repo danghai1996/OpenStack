@@ -1,5 +1,9 @@
 # Các loại Token trong Keystone
 
+# Một số khái niệm
+### Payload (dịch: khối hàng)
+Payload là phần dữ liệu vận chuyển của một gói tin giữa 2 đối tác, mà không chứa dữ liệu giao thức hay siêu dữ liệu chỉ được gửi đi để dùng cho việc chuyên chở payload. Payload thường là văn bản, dấu hiệu hay âm thanh. Payload thường nằm dưới phần đầu (header), và tùy theo giao thức mạng có thể có thêm phần cuối (trailer).
+
 # I. Lịch sử token trong OPS
 Vào những ngày đầu, Keystone hỗ trợ UUID token. Đây là loại token gồm 32 kí tự được dùng để xác thực và ủy quyền. Lợi ích mà loại token này mang lại đó là nó nhỏ gọn và dễ sử dụng, nó có thể được thêm trực tiếp vào câu lệnh cURL. Tuy nhiên nó lại không thể chứa đủ thông tin để thực hiện việc ủy quyền. Các services của OpenStack sẽ luôn phải gửi lại token này lại cho Keystone để xác thực xem hành động có hợp lệ không. Điều này khiến Keystone trở thành trung tâm cho mọi hoạt động của OpenStack.
 
@@ -9,14 +13,7 @@ Trong nỗ lực kiếm tìm một loại token mới để khắc phục nhữn
 
 # II. Các loại token
 ## 1. UUID
-UUID là token format đầu tiên của keystone, nó đơn giản chỉ là một chuỗi UUID gồm 32 kí tự được generate random. Nó được xác thực bởi identity service. Phương thức `hexdigest()` được sử dụng để tạo ra chuỗi kí tự hexa. Điều này khiến token URL trở nên an toàn và dễ dàng trong việc vận chuyển đến các môi trường khác.
-
-UUID token buộc phải được lưu lại trong một backend (thường là database). Nó cũng có thể được loại bỏ bằng các sử dụng DELETE request với token id. Tuy nhiên nó sẽ không thực sự bị loại bỏ khỏi backend mà chỉ được đánh dấu là đã được loại bỏ. Vì nó chỉ có 32 bytes nên kích thước của nó trong HTTP header cũng sẽ là 32 bytes.
-
-Loại token này rất nhỏ và dễ sử dụng tuy nhiên nếu sử dụng nó, Keystone sẽ là "cổ chai" của hệ thống bởi mọi cuộc giao tiếp đều cần tới keystone để xác thực token.
-
-### UUID
-- UUID là viết tắt của Universally Unique IDentifier, hiểu nôm na là một định danh duy nhất trong toàn thể vũ trụ (universal cơ mà) =)). Mục đích của UUID sinh ra là bởi vì:
+- UUID là viết tắt của Universally Unique IDentifier, hiểu nôm na là một định danh duy nhất.
 - A UUID is a 16-octet (128-bit) number.
 - UUID được đại diện bởi 32 chữ số thập lục phân,hiển thị trong năm nhóm, phân cách bằng dấu gạch nối, với dạng 8-4-4-4-12. Có tổng cộng 36 ký tự, trong đó 32 ký tự chữ với 4 dấu gạch ngang.
 - UUID có 5 phiên bản, trong đó keystone sử dụng UUIDv4.
