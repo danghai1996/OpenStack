@@ -242,7 +242,7 @@ Một trong những vấn đề của loại token này đó là nó dùng symme
 - Nhanh hơn 85% so với UUID và 89% so với PKI.
 
 ### Đặc điểm
-- Fernet Keys lưu trữ trong /etc/keystone/fernet-keys:
+- Fernet Keys lưu trữ trong `/etc/keystone/fernet-keys`
 - Mã hóa với Primary Fernet Key
 - Giải mã với danh sách các Fernet Key
 
