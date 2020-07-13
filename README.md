@@ -29,3 +29,5 @@ Ghi chép tìm hiểu OpenStack
 [6. File cấu hình trong Keystone](./Keystone/06-File_config.md)
 
 [7. File log của Keystone](./Keystone/07-file_log.md)
+
+[8. Khái niệm Endpoint và Catalog](./Keystone/08-EndpointAndCatalog.md)
