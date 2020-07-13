@@ -341,3 +341,28 @@ Với key và message nhận được, quá trình tạo fernet token như sau:
 
 ### Multiple data centers
 Vì Fernet key không cần phải được lưu vào database nên nó có thể hỗ trợ multiple data center. Tuy nhiên keys sẽ phải được phân phối tới tất cả các regions.
+
+
+## 5. Horizon và token
+### Cách Horizon dùng token
+- Tokens được sử dụng cho mỗi lần log in của user
+- Horizon lấy unscoped token cho user và sau dựa vào các request để cung cấp các project scoped token.
+- Token có thể được tái sử dụng bằng cách lưu lại sau mỗi session.
+- Các method để lưu token:
+    - Local memory cache
+    - Cookie backend
+    - Memcache
+    - database
+    - Cached Database
+
+**Cookie backend**
+- Là phương thức mặc định của devstack
+- Token được lưu trên cookie của trình duyệt
+- Có khả năng co giãn cao
+- Khi cookie đầy, dễ dẫn tới tình trạng không xác thực được user -> back to login
+
+**Memcache backend**
+- Cho phép lưu một lượng lớn token
+- Token được lưu ở phía server
+- Yêu cầu cấu hình memcached
+- Có thể sử dụng với backing DB
