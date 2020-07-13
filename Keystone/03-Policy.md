@@ -1,7 +1,45 @@
 # Policy
 
-Bản Train: Show các policy mặc định:
+## File `policy.json`
+- Người dùng trên hệ thống được khởi tạo sẽ lưu vào database của keystone và được sử dụng để xác thực và làm việc với API. Điều đó là chuyện bình thường nhưng để phục vụ bài toán xa hơn Openstack sử dụng chức năng role để giải quyết bài toán role-based access, điều là nguyên nhân của policy trong openstack.
+
+- Mỗi service trong Openstack, indenity, networking, compute... đều có một cơ chế quản lý quyền role-based access policies riêng của chúng. Các role-based này được chúng sử dụng để xác định một người dùng nào có thể truy cập vào một object nào trong chúng, và các policy này được định nghĩa tại file `policy.json`
+
+- Khi một lời gọi tới API, các policy trên serivice sẽ được sử dụng để kiểm tra và chấp nhận các request này. Mỗi khi cập nhật một rule trên file policy.json thì sẽ có tác dụng ngay lập tức trong khi service đang chạy
+
+- Một file `policy.json` được định dạng dưới dạng JSON. Mỗi policy sẽ được định nghĩa theo format sau:
+    ```
+    <target>" : "<rule>"
+    ```
+
+- Với target sẽ là một action, đại diện cho một API có thể là `os_compute_api:servers:create`. Các action name này sẽ tùy theo từng loại dịch vụ sẽ có các đặc tính đi kèm, và được đặt tại file "`/etc/{service_name}/policy.json`" để các service được hiểu đây là các action cần được kiểm tra.
+
+- Với rule sẽ thường được sử dụng để xác định một role hay người dùng nào được làm việc hay không làm việc với API target
+
+- Ví dụ : Cho phép người dùng khởi tạo một user mới , thì sẽ chỉ rõ role test sẽ được khởi tạo
+    ```
+    "identity:create_user" : "role: test"
+    ```
+
+- Ngoài ra còn có thể sử dụng chức năng alias để tạo một rule định nghĩa sẵn, rule này như một hằng được sử dụng nhiều lần trên các target có cùng rule giống nhau.
+    ```
+    "admin_required": "role:admin or is_admin:1",
+    "owner" : "user_id:%(user_id)s",
+    "admin_or_owner": "rule:admin_required or rule:owner",
+    "identity:change_password": "rule:admin_or_owner"
+    ```
+
+
+**Bản Train:** Mặc định file policy
+
+Để gen các policy mặc định, ta thực hiện như sau:
+> ## Check lại -> gen ra dạng yaml chứ không phải json
 ```
-oslopolicy-policy-generator --namespace <project>
+oslopolicy-policy-generator --namespace keystone --output-file /etc/keystone/policy.json
+oslopolicy-policy-generator --namespace glance --output-file /etc/glance/policy.json
+oslopolicy-policy-generator --namespace nova --output-file /etc/nova/policy.json
+oslopolicy-policy-generator --namespace neutron --output-file /etc/neutron/policy.json
+oslopolicy-policy-generator --namespace cinder --output-file /etc/cinder/policy.json
 ```
 
+## Lab Thêm policy
