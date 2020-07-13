@@ -2,47 +2,7 @@
 
 File cấu hình log của Keystone:
 ```conf
-cat /etc/keystone/logging.conf | egrep -v "^$|^#"
-
-[loggers]
-keys=root,access
-[handlers]
-keys=production,file,access_file,devel
-[formatters]
-keys=minimal,normal,debug
-[logger_root]
-level=WARNING
-handlers=file
-[logger_access]
-level=INFO
-qualname=access
-handlers=access_file
-[handler_production]
-class=handlers.SysLogHandler
-level=ERROR
-formatter=normal
-args=(('localhost', handlers.SYSLOG_UDP_PORT), handlers.SysLogHandler.LOG_USER)
-[handler_file]
-class=handlers.WatchedFileHandler
-level=WARNING
-formatter=normal
-args=('error.log',)
-[handler_access_file]
-class=handlers.WatchedFileHandler
-level=INFO
-formatter=minimal
-args=('access.log',)
-[handler_devel]
-class=StreamHandler
-level=NOTSET
-formatter=debug
-args=(sys.stdout,)
-[formatter_minimal]
-format=%(message)s
-[formatter_normal]
-format=(%(name)s): %(asctime)s %(levelname)s %(message)s
-[formatter_debug]
-format=(%(name)s): %(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s
+/etc/keystone/logging.conf
 ```
 
 **3 kiểu log:**
