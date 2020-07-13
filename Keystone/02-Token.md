@@ -244,4 +244,4 @@ Vì Fernet key không cần phải được lưu vào database nên nó có th�
 - Cho phép lưu một lượng lớn token
 - Token được lưu ở phía server
 - Yêu cầu cấu hình memcached
-- Có thể sử dụng với backing DB-
+- Có thể sử dụng với backing DB
