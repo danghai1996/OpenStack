@@ -35,11 +35,49 @@
 Để gen các policy mặc định, ta thực hiện như sau:
 > ## Check lại -> gen ra dạng yaml chứ không phải json
 ```
-oslopolicy-policy-generator --namespace keystone --output-file /etc/keystone/policy.json
-oslopolicy-policy-generator --namespace glance --output-file /etc/glance/policy.json
-oslopolicy-policy-generator --namespace nova --output-file /etc/nova/policy.json
-oslopolicy-policy-generator --namespace neutron --output-file /etc/neutron/policy.json
-oslopolicy-policy-generator --namespace cinder --output-file /etc/cinder/policy.json
+oslopolicy-policy-generator --namespace keystone --output-file /etc/keystone/policy.yaml
+oslopolicy-policy-generator --namespace glance --output-file /etc/glance/policy.yaml
+oslopolicy-policy-generator --namespace nova --output-file /etc/nova/policy.yaml
+oslopolicy-policy-generator --namespace neutron --output-file /etc/neutron/policy.yaml
+oslopolicy-policy-generator --namespace cinder --output-file /etc/cinder/policy.yaml
+```
+
+Và để sử dụng file `.yaml` làm policy ta chỉnh trong file cấu hình keystone:
+```
+[oslo_policy]
+policy_file = policy.yaml
+```
+Restart httpd
+```
+systemctl restart httpd
 ```
 
 ## Lab Thêm policy
+- Thêm thử dòng sau vào file `policy.yaml` để cho role `test` có quyền list user:
+```
+"identity:list_users" : "role:test"
+```
+
+- Tạo user và gán role `test` cho user đó.
+
+- Dùng user vừa tạo để list user:
+    ```
+    openstack user list
+    +----------------------------------+-----------+
+    | ID                               | Name      |
+    +----------------------------------+-----------+
+    | 294c5c6181d442c68a13d5b615c4f031 | admin     |
+    | 8db90f3de7a54375aa16eb1d0626f1bb | demo      |
+    | afe0224c90f84b3b83a8d9788921ccef | glance    |
+    | f30b4ed7a5a54ea68d98aeee438bb80f | placement |
+    | 4be5d5ed900f4386a5f9268927c46ecb | nova      |
+    | 74cf804695e44ae4995f9579446ae813 | neutron   |
+    | 580b7509af5d48c6a152296a5f0c0137 | haidd     |
+    +----------------------------------+-----------+
+    ```
+
+**Tuy nhiên:**
+- user admin lại không còn list được user
+- Dashboard truy cập bị lỗi. Khoong login được:
+    
+    <img src="..\images\Screenshot_65.png">
