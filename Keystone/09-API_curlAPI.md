@@ -10,12 +10,15 @@
 
 
 
-# Sử dụng `curl` để gọi API
+# Sử dụng `curl` để gọi API Openstack
 ## 1. Lấy token
 ### Dùng curl
+**Method:** POST
 ```
-curl -i -H "Content-Type: application/json" -d '
-{ "auth": {
+curl -X POST -i \
+-H "Content-Type: application/json" \
+-d \
+'{ "auth": {
     "identity": {
         "methods": ["password"],
         "password": {
@@ -33,14 +36,15 @@ curl -i -H "Content-Type: application/json" -d '
           }
         }
   }
-}' http://localhost:5000/v3/auth/tokens
+}' \
+http://localhost:5000/v3/auth/tokens
 ```
 OPtion sử dụng trong lệnh `curl`:
 - `-i` (--include): Output sẽ chứa cả HTTP-header
 - `-H` (--header): kết hợp với Content-Type để xác định kiểu dữ liệu truyền vào header. Tại đây là dạng json
-- `-d` (--data) : Dữ liệu truyền vào
+- `-d` (--data) : Dữ liệu truyền vào body
 
-Kết quả:
+**Kết quả:**
 ```json
 HTTP/1.1 201 CREATED
 Date: Wed, 15 Jul 2020 02:54:06 GMT
@@ -241,6 +245,17 @@ Content-Type: application/json
 
 Token nằm ở phía sau `X-Subject-Token`
 
+**Để ý giá trị:**
+- `"expires_at": "2020-07-15T03:54:06.000000Z",` : thời điểm hết hạn của Token
+- `"issued_at": "2020-07-15T02:54:06.000000Z"` : thời điểm token được tạo
+
+Ta thấy thời gian tồn tại mặc định của token là 1 tiếng (60 phút)
+
+Export Token để sử dụng thuận tiện:
+```
+export OS_TOKEN=<giá_trị_token>
+```
+
 
 ## 2. List user
 ### Command
@@ -262,7 +277,7 @@ openstack user list
 
 ### `curl` API
 ```
-curl -s -H "X-Auth-Token: $OS_TOKEN" http://localhost:5000/v3/users | python -mjson.tool
+curl -X GET -s -H "X-Auth-Token: $OS_TOKEN" http://localhost:5000/v3/users | python -mjson.tool
 ```
 
 - `python -mjson.tool` : định dạng output ra là dạng json
@@ -361,24 +376,75 @@ curl -s -H "X-Auth-Token: $OS_TOKEN" http://localhost:5000/v3/users | python -mj
 ## 3. List project
 Tương tự list user, thay thế URL
 ```
-curl -s -H "X-Auth-Token: $OS_TOKEN" \
+curl -X GET -s -H "X-Auth-Token: $OS_TOKEN" \
 http://localhost:5000/v3/projects | python -mjson.tool
 ```
 
 ## 4. List group
 ```
-curl -s -H "X-Auth-Token: $OS_TOKEN" \
- http://localhost:5000/v3/groups | python -mjson.tool
+curl -X GET -s -H "X-Auth-Token: $OS_TOKEN" \
+http://localhost:5000/v3/groups | python -mjson.tool
 ```
 
 ## 5. List role
 ```
-curl -s -H "X-Auth-Token: $OS_TOKEN" \
+curl -X GET -s -H "X-Auth-Token: $OS_TOKEN" \
 http://localhost:5000/v3/roles | python -mjson.tool
 ```
 
 ## 6. List domain
 ```
-curl -s -H "X-Auth-Token: $OS_TOKEN" \
+curl -X GET -s -H "X-Auth-Token: $OS_TOKEN" \
 http://localhost:5000/v3/domains | python -mjson.tool
 ```
+
+## 7. Tạo domain
+```
+curl -X POST -s \
+-H "X-Auth-Token: $OS_TOKEN" -H "Content-Type: application/json" \
+-d \
+'{
+  "domain": {
+    "name": "domain_haidd",
+    "description": "Domain HaiDD"
+  }
+}' \
+http://localhost:5000/v3/domains | python -mjson.tool
+```
+OUTPUT
+```
+{
+    "domain": {
+        "description": "Domain HaiDD",
+        "enabled": true,
+        "id": "592bbf3e1ea14f6aaef110341682fc38",
+        "links": {
+            "self": "http://localhost:5000/v3/domains/592bbf3e1ea14f6aaef110341682fc38"
+        },
+        "name": "domain_haidd",
+        "options": {},
+        "tags": []
+    }
+}
+```
+
+Kiểm tra lại domain vừa tạo:
+```
+openstack domain show domain_haidd
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | Domain HaiDD                     |
+| enabled     | True                             |
+| id          | 592bbf3e1ea14f6aaef110341682fc38 |
+| name        | domain_haidd                     |
+| options     | {}                               |
+| tags        | []                               |
++-------------+----------------------------------+
+```
+
+
+
+----------
+## Xem chi tiết API Keystone:
+- https://docs.openstack.org/api-ref/identity/v3/index.html
