@@ -78,3 +78,32 @@ glance-api --config-dir=/etc/glance/glance-api.d
     filesystem_store_datadirs = /var/glance/store1:100
     filesystem_store_datadirs = /var/glance/store2:200
     ```
+
+## Nơi lưu image mặc định
+Để kiểm tra thư mục lưu các image:
+```
+cat /etc/glance/glance-api.conf | grep "filesystem_store_datadir" | egrep -v "^#|^$"
+```
+OP:
+```
+filesystem_store_datadir = /var/lib/glance/images/
+```
+
+Kiểm tra các image hiện có:
+```
+ls -lh /var/lib/glance/images/
+total 13M
+-rw-r----- 1 glance glance 13M Jun 25 23:07 010ffd94-4d26-4dc6-be5b-1a7a31a3686a
+```
+
+Kiểm tra bằng command:
+```
+openstack image list
++--------------------------------------+--------+--------+
+| ID                                   | Name   | Status |
++--------------------------------------+--------+--------+
+| 010ffd94-4d26-4dc6-be5b-1a7a31a3686a | cirros | active |
++--------------------------------------+--------+--------+
+```
+
+Ta thấy, image được lưu dưới dạng tên là ID của image đó.
