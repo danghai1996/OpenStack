@@ -1,2 +1,0 @@
-# Curl API Glance
-
