@@ -42,3 +42,15 @@
     - Projects
 
     Theo lý thuyết, Nova hỗ trợ tất cả các database mà SQLAlchemy support ví dụ như SQLite3, MySQL, MariaDB, và PostgreSQL.
+
+
+## 3. Kiến trúc của Nova
+
+<img src="..\images\Screenshot_69.png">
+
+- DB: sql database để lưu trữ dữ liệu.
+- API: Thành phần để nhận HTTP request , chuyển đổi các lệnh và giao tiếp với thành các thành phần khác thông qua oslo.messaging queuses hoặc HTTP.
+- Scheduler: Quyết định ,máy chủ được chọn để chạy máy ảo.
+- Compute: Quản lý giao tiếp với hypervisor và vitual machines.
+- Conductor: Xử lý các yêu cầu mà cần sự phối hợp (build/resize), hoạt động như một proxy cho cơ sở dữ liệu, hoặc đối tượng chuyển đổi.
+- Placement: theo dõi tài nguyên còn lại và đã sử dụng
