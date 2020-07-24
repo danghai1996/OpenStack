@@ -1,0 +1,2 @@
+# File log của Nova
+
