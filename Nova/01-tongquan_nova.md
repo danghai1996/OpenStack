@@ -35,7 +35,7 @@
 
 - **The queue**: Trung tâm giao tiếp giữa các daemons. Thường dùng RabbitMQ hoặc các AMQP message queue khác như ZeroMQ.
 
-- **SQL database** : Dùng để lưu các trạng thái của hạ tâng caloud bảo gồm:
+- **SQL database** : Dùng để lưu các trạng thái của hạ tầng cloud bao gồm:
     - Các loại máy ảo có thể chạy
     - Các máy ảo đang được dùng
     - Các network khả dụng
