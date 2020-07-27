@@ -1,7 +1,7 @@
 # Giới thiệu về Cloud-init
 
 ## 1. Cloud-init
-Cloud-init là một công cụ được sử dụng để thực hiện các thiếp lập ban đầu đối với các máy ảo hóa và cloud. Dịch vụ này sẽ chạy trước quá trình boot, nó lấy dữ liệu từ bên ngoài và thực hiện một số tác động tới máy chủ.
+Cloud-init là một công cụ được sử dụng để thực hiện các thiết lập ban đầu đối với các máy ảo hóa và cloud. Dịch vụ này sẽ chạy trước quá trình boot, nó lấy dữ liệu từ bên ngoài và thực hiện một số tác động tới máy chủ.
 
 Các tác động mà cloud-init thực hiện phụ thuộc vào loại format thông tin mà nó tìm kiếm được. Các format hỗ trợ:
 
