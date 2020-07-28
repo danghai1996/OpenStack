@@ -24,10 +24,29 @@ Có nghĩa là, một triển khai điển hình VNC console với noVNC gồm 2
 <img src="..\images\Screenshot_72.png">
 
 1. User sẽ gửi request truy cập URL tới `nova-api`
+
 2. `Nova-api` sẽ gửi message báo cho compute node với nội dung `get_vnc_console`
+
 3. `Compute node` sinh token gửi message `get_vnc_connection` tới `libvier driver`
+
 4. `Nova-api` gửi message `authorize_console` đến `nova-consoleauth`
+
 5. Nova-api trả về cho user URL truy cập noVNC kèm token
+
 6. User sử dụng URL và token để truy cập trên trình duyệt
+
 7. Trình duyệt gửi message `check_token` tới `Nova-consoleauth` để kiểm tra
+
 8. Sau khi xác nhận đúng, Proxy khởi động và user sẽ truy cập được console của VM
+
+## VNC configure options
+```conf
+[vnc]
+enabled = true
+server_listen = $my_ip
+server_proxyclient_address = $my_ip
+```
+
+
+## Tham khảo:
+https://docs.openstack.org/nova/train/admin/remote-console-access.html
