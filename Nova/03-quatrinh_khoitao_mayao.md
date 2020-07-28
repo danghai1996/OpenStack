@@ -42,7 +42,7 @@
 17. Nova-compute sẽ generate dữ liệu cho Hypervisor và gửi thông tin thông qua libvirt.
 
 ## Spawning VMs workflow
-1. Dùng câu lệnh `nova-boot` hoặc tạo máy ảo trên dashboard
+1. Dùng câu lệnh hoặc tạo máy ảo trên dashboard
 
 2. Quy trình tạo máy ảo: API -> Scheduler -> Compute (manager) -> Libvirt Driver
 
