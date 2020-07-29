@@ -1743,3 +1743,186 @@ systemctl restart memcached.service
 Truy cập vào trang chủ với địa chỉ `http://10.10.31.166` với user/pass: `admin`/`Welcome123`
 
 [Hướng dẫn sử dụng dashboard](./HDSD_Dashboard.md)
+
+### 2.13. Cài đặt Cinder
+> Cài đặt trên node Controller
+
+Tạo databases:
+```sql
+mysql -u root -pWelcome123
+CREATE DATABASE cinder;
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' IDENTIFIED BY 'Welcome123';
+```
+
+Tạo user:
+```
+source /root/admin-openrc
+
+openstack user create --domain default --password Welcome123 cinder
+```
+
+Add role:
+```
+openstack role add --project service --user cinder admin
+```
+
+Tạo service
+```
+openstack service create --name cinderv2 \
+--description "OpenStack Block Storage" volumev2
+
+openstack service create --name cinderv3 \
+--description "OpenStack Block Storage" volumev3
+```
+
+Tạo endpoint
+```
+openstack endpoint create --region RegionOne \
+volumev2 public http://10.10.31.166:8776/v2/%\(project_id\)s
+
+openstack endpoint create --region RegionOne \
+volumev2 internal http://10.10.31.166:8776/v2/%\(project_id\)s
+
+openstack endpoint create --region RegionOne \
+volumev2 admin http://10.10.31.166:8776/v2/%\(project_id\)s
+
+openstack endpoint create --region RegionOne \
+volumev3 public http://10.10.31.166:8776/v3/%\(project_id\)s
+
+openstack endpoint create --region RegionOne \
+volumev3 internal http://10.10.31.166:8776/v3/%\(project_id\)s
+
+openstack endpoint create --region RegionOne \
+volumev3 admin http://10.10.31.166:8776/v3/%\(project_id\)s
+```
+
+Cài đặt các gói Cinder
+```
+yum install -y openstack-cinder lvm2 device-mapper-persistent-data targetcli python-keystone
+```
+
+Enable service
+```
+systemctl enable lvm2-lvmetad.service
+systemctl start lvm2-lvmetad.service
+```
+
+Kiểm tra dung lượng disk:
+```
+lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sr0              11:0    1  918M  0 rom
+vda             252:0    0   60G  0 disk
+├─vda1          252:1    0    1G  0 part /boot
+└─vda2          252:2    0   59G  0 part
+  ├─centos-root 253:0    0 35.6G  0 lvm  /
+  ├─centos-swap 253:1    0    6G  0 lvm  [SWAP]
+  └─centos-home 253:2    0 17.4G  0 lvm  /home
+vdb             252:16   0  100G  0 disk
+```
+
+Tạo pv, vg:
+```
+pvcreate /dev/vdb
+
+vgcreate cinder-volumes /dev/vdb
+```
+
+Chỉnh sửa file: `/etc/lvm/lvm.conf`
+- Uncomment dòng 141
+    ```
+    filter = [ "a|.*/|" ]
+    ```
+
+Backups cấu hình Cinder:
+```
+mv /etc/cinder/cinder.conf /etc/cinder/cinder.conf.bak
+```
+
+Cấu hình Cinder:
+```
+cat << EOF >> /etc/cinder/cinder.conf
+[DEFAULT]
+transport_url = rabbit://openstack:Welcome123@10.10.31.166
+auth_strategy = keystone
+my_ip = 10.10.31.166
+enabled_backends = lvm
+glance_api_servers = http://10.10.31.166:9292
+enable_v3_api = True
+[backend]
+[backend_defaults]
+[barbican]
+[brcd_fabric_example]
+[cisco_fabric_example]
+[coordination]
+[cors]
+[database]
+connection = mysql+pymysql://cinder:Welcome123@10.10.31.166/cinder
+[fc-zone-manager]
+[healthcheck]
+[key_manager]
+[keystone_authtoken]
+www_authenticate_uri = http://10.10.31.166:5000
+auth_url = http://10.10.31.166:5000
+memcached_servers = 10.10.31.166:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = cinder
+password = Welcome123
+[nova]
+[oslo_concurrency]
+lock_path = /var/lib/cinder/tmp
+[oslo_messaging_amqp]
+[oslo_messaging_kafka]
+[oslo_messaging_notifications]
+[oslo_messaging_rabbit]
+[oslo_middleware]
+[oslo_policy]
+[oslo_reports]
+[oslo_versionedobjects]
+[privsep]
+[profiler]
+[sample_castellan_source]
+[sample_remote_file_source]
+[service_user]
+[ssl]
+[vault]
+[lvm]
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+target_protocol = iscsi
+target_helper = lioadm
+EOF
+```
+
+Sync db
+```
+su -s /bin/sh -c "cinder-manage db sync" cinder
+```
+
+Restart nova-api
+```
+systemctl restart openstack-nova-api.service
+```
+
+Enable service
+```
+systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-volume.service target.service
+
+systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-volume.service target.service
+```
+
+Kiểm tra lại
+```
+openstack volume service list
+
++------------------+----------------+------+---------+-------+----------------------------+
+| Binary           | Host           | Zone | Status  | State | Updated At                 |
++------------------+----------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller     | nova | enabled | up    | 2020-07-29T02:31:29.000000 |
+| cinder-volume    | controller@lvm | nova | enabled | up    | 2020-07-29T02:31:30.000000 |
++------------------+----------------+------+---------+-------+----------------------------+
+```
