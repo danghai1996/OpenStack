@@ -16,17 +16,17 @@ Cinder ảo hóa việc quản lý các thiết bị block storage và cung cấ
 |**Kích cỡ được xác định bởi**	|Người quản trị hệ thống cấu hình cài đặt kích cỡ, tương tự như là Flavors	|Dựa theo đặc điểm yêu cầu của người dùng	|Số lượng lưu trữ mà máy vật lý hiện có|
 
 ### Một số khái niệm
-1. Share storage: là hệ thống lưu trữ được sử dụng chung bởi nhiều người hay máy tính. Nó lưu trữ tất cả các tệp trong một kho lưu trữ tập trung và cho phép nhiều người dùng truy cập chúng cùng một lúc.
+1. **Share storage**: là hệ thống lưu trữ được sử dụng chung bởi nhiều người hay máy tính. Nó lưu trữ tất cả các tệp trong một kho lưu trữ tập trung và cho phép nhiều người dùng truy cập chúng cùng một lúc.
 
-2. Scale up: nâng cấp những thứ hiện có để có hiệu năng tốt hơn và xử lý nhiều tải hơn. Ví dụ: thay thế CPU 2 core thành CPU 4 core
+2. **Scale up**: nâng cấp những thứ hiện có để có hiệu năng tốt hơn và xử lý nhiều tải hơn. Ví dụ: thay thế CPU 2 core thành CPU 4 core
 
-3. Scale out: thêm nhiều thành phần tương tự hiện có để chia tải, đồng thời phải sử dụng các giải pháp cân bằng tải (load balencing)
+3. **Scale out**: thêm nhiều thành phần tương tự hiện có để chia tải, đồng thời phải sử dụng các giải pháp cân bằng tải (load balencing)
 
-4. File storage: lưu trữ cấp độ tệp hoặc lưu trữ dựa trên tệp, là một phương pháp lưu trữ phân cấp được sử dụng để tổ chức và lưu trữ dữ liệu trên ổ cứng máy tính hoặc trên NAS (network-attached storage). Thường được sử dụng cho dữ liệu có cấu trúc và dung lượng không quá lớn
+4. **File storage**: lưu trữ cấp độ tệp hoặc lưu trữ dựa trên tệp, là một phương pháp lưu trữ phân cấp được sử dụng để tổ chức và lưu trữ dữ liệu trên ổ cứng máy tính hoặc trên NAS (network-attached storage). Thường được sử dụng cho dữ liệu có cấu trúc và dung lượng không quá lớn
 
-5. Block storage: lưu trữ dựa trên các khối. Là một công nghệ được sử dụng để lưu trữ các file dữ liệu trên SANs (Storage Area Networks) hoặc cloud. Block storage chia dữ liệu thành các khối và sau đó lưu trữ các khối dưới dạng các phần riêng biệt, mỗi khối có mã định danh duy nhất. Điều đó có nghĩa là nó có thể lưu trữ các khối đó trên các hệ thống khác nhau và mỗi khối có thể được cấu hình (hoặc phân vùng) để hoạt động với các hệ điều hành khác nhau. Nó tách dữ liệu khỏi môi trường người dùng, cho phép dữ liệu đó được trải rộng trên nhiều môi trường. Điều này tạo ra nhiều đường dẫn đến dữ liệu và cho phép người dùng truy xuất dữ liệu nhanh chóng
+5. **Block storage**: lưu trữ dựa trên các khối. Là một công nghệ được sử dụng để lưu trữ các file dữ liệu trên SANs (Storage Area Networks) hoặc cloud. Block storage chia dữ liệu thành các khối và sau đó lưu trữ các khối dưới dạng các phần riêng biệt, mỗi khối có mã định danh duy nhất. Điều đó có nghĩa là nó có thể lưu trữ các khối đó trên các hệ thống khác nhau và mỗi khối có thể được cấu hình (hoặc phân vùng) để hoạt động với các hệ điều hành khác nhau. Nó tách dữ liệu khỏi môi trường người dùng, cho phép dữ liệu đó được trải rộng trên nhiều môi trường. Điều này tạo ra nhiều đường dẫn đến dữ liệu và cho phép người dùng truy xuất dữ liệu nhanh chóng
 
-6. Object storage: lưu trữ dựa trên đối tượng. Thường được sử dụng để xử lý khối lượng lớn dữ liệu phi cấu trúc. Đây là dữ liệu không phù hợp hoặc không thể được tổ chức dễ dàng vào cơ sở dữ liệu quan hệ truyền thống với các hàng và cột. Dữ liệu phi cấu trúc bao gồm: email, hình ảnh, video, ... Object storage không sử dụng thư mục hay hệ thống phân cấp phức tạp nào. Thay vào đó, mỗi object là một kho lưu trữ độc lập gồm dữ liệu, metadata, và ID xác thực để ứng dụng dùng để truy cập. Nó dùng để lưu trữ dữ liệu không thay đổi thường xuyên hoặc hoàn toàn (tệp tĩnh), chẳng hạn như hồ sơ giao dịch hoặc tệp nhạc, hình ảnh và video.
+6. **Object storage**: lưu trữ dựa trên đối tượng. Thường được sử dụng để xử lý khối lượng lớn dữ liệu phi cấu trúc. Đây là dữ liệu không phù hợp hoặc không thể được tổ chức dễ dàng vào cơ sở dữ liệu quan hệ truyền thống với các hàng và cột. Dữ liệu phi cấu trúc bao gồm: email, hình ảnh, video, ... Object storage không sử dụng thư mục hay hệ thống phân cấp phức tạp nào. Thay vào đó, mỗi object là một kho lưu trữ độc lập gồm dữ liệu, metadata, và ID xác thực để ứng dụng dùng để truy cập. Nó dùng để lưu trữ dữ liệu không thay đổi thường xuyên hoặc hoàn toàn (tệp tĩnh), chẳng hạn như hồ sơ giao dịch hoặc tệp nhạc, hình ảnh và video.
 
 ## 2. Kiến trúc và cơ chế Cinder
 <img src="..\images\Screenshot_73.png">
