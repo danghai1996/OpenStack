@@ -11,3 +11,5 @@
 [5. File log của Glance](./05-file_log.md)
 
 [6. CÁc lệnh thường dùng với Glance](./06-glance_cli.md)
+
+[7. Metadata](./07-metadata.md)
