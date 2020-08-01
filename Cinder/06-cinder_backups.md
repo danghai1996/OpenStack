@@ -1,4 +1,4 @@
-# Cấu hình Cinder backups với backends là NFS
+# Cấu hình Cinder backups với backends là NFS - bản Train
 
 ## Cấu hình NFS làm backends cho Cinder
 > Trên host chạy Cinder volume service
@@ -7,7 +7,7 @@ Dùng trình soạn thảo vi mở file `/etc/cinder/nfs_shares` :
 ```
 vi /etc/cinder/nfs_shares 
 ```
-Thêm: `/var/lib/nfs-share` là thư mục mà chúng ta sẽ share khi cấu hình NFS (thư mục chứa các file backups).
+Thêm: `/var/lib/nfs-share` thư mục chứa volume NFS và các volume backups.
 ```
 10.10.31.166:/var/lib/nfs-share
 ```
