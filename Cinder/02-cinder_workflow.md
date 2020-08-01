@@ -85,4 +85,4 @@ Quá trình tạo một volume mới trên cinder
 
 8. Sau khi restore xong, backup service gửi lại phản hồi vveef cho cinder-api qua AMQP
 
-9. Cinder-api đọc thông điệp từ cinder-backup và chuyển kết quả cho client.
+9. Cinder-api đọc thông điệp từ cinder-backup và chuyển kết quả cho client
