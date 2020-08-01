@@ -10,3 +10,6 @@
 
 [5. Cinder Scheduler](./05-cinder_scheduler.md)
 
+[6. Cinder Backup với backend NFS](./06-cinder_backups.md)
+
+[7. File log của Cinder](./07-file_log_cinder.md)
