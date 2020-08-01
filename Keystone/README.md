@@ -16,3 +16,5 @@
 [7. File log của Keystone](./07-file_log.md)
 
 [8. Khái niệm Endpoint và Catalog](./08-EndpointAndCatalog.md)
+
+[9. Tìm hiểu về API và sử dụng curl để gọi API](./09-API_curlAPI.md)
