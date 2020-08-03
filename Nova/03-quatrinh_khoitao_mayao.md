@@ -15,7 +15,7 @@
 
 4. Nova kiểm tra trong database để xem có conflicts nào với tên những objects đã có sẵn không và tạo mới một entry cho máy ảo mới trong database.
 
-5. Nova-api gửi RPC tới nova-scheduler service để lên lịch cho máy ảo.
+5. Nova-api gửi RPC(Remote Procedure Call) tới nova-scheduler service để lên lịch cho máy ảo.
 
 6. Nova-scheduler lấy request từ message queue
 
