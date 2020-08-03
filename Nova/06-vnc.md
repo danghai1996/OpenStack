@@ -47,6 +47,12 @@ server_listen = $my_ip
 server_proxyclient_address = $my_ip
 ```
 
+## Thời gian hết token
+Mặc định là 600. `/etc/nova/nova.conf`
+```conf
+[consoleauth]
+token_ttl=600
+```
 
 ## Tham khảo:
 https://docs.openstack.org/nova/train/admin/remote-console-access.html
