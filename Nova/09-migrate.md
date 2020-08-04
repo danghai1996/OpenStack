@@ -168,6 +168,9 @@ Kiểm tra lại kết quả:
 openstack server list --long
 ```
 
+## Hướng dẫn cấu hình Live-Migrate
+
+
 
 
 # Tham khảo
