@@ -7,7 +7,7 @@ Theo mặc định, Compute service cho phép tỉ lệ sau:
 - **CPU** : 16:1
 - **RAM** : 1.5:1
 
-Công thức tính số lượng các ví dụ ảo trên compute node là **(OR*PC)/VC**, ở đây:
+Công thức tính số lượng các máy ảo trên compute node là **(OR*PC)/VC**, ở đây:
 - **OR**: CPU overcommit ratio (virtual cores tương ứng với mỗi physical core)
 - **PC**: Số physical cores.
 - **VC**: Số virtual cores mỗi instance.
@@ -22,7 +22,7 @@ ram_allocation_ratio = 0.0
 disk_allocation_ratio = 0.0
 ```
 
-Nếu ta để ratio là 0.0 thì chỉ số ratio mặc định của cpu, ram, disk là `16`, `1.5`, `1.0`
+Nếu ta để ratio là 0.0 thì chỉ số ratio mặc định của cpu, ram, disk là `16.0`, `1.5`, `1.0`
 
 Sau khi cấu hình, restart lại dịch vụ của nova:
 ```
