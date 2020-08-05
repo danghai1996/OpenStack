@@ -169,7 +169,144 @@ openstack server list --long
 ```
 
 ## Hướng dẫn cấu hình Live-Migrate
+**OpenStack hỗ trợ 2 loại live migrate:**
+- True live migration (shared storage or volume-based) : Trong trường hợp này, máy ảo sẽ được di chuyển sửa dụng storage mà cả hai máy computes đều có thể truy cập tới. Nó yêu cầu máy ảo sử dụng block storage hoặc shared storage.
+- Block live migration : Mất một khoảng thời gian lâu hơn để hoàn tất quá trình migrate bởi máy ảo được chuyển từ host này sang host khác. Tuy nhiên nó lại không yêu cầu máy ảo sử dụng hệ thống lưu trữ tập trung.
 
+Các yêu cầu chung:
+- Cả hai node nguồn và đích đều phải được đặt trên cùng subnet và có cùng loại CPU.
+- Cả controller và compute đều phải phân giải được tên miền của nhau.
+- Compute node buộc phải sử dụng KVM với libvirt.
+
+**Lưu ý:** live-migration làm việc với 1 số loại VM và storage
+- Shared storage: Cả 2 hypervisor có quyền truy cập shared storage chung.
+- Block storage: VM sử dụng root disk, không tương thích với các loại read-only devices.
+- Volume storage: VM sử dụng iSCSI volumes.
+
+### Cấu hình live migrate
+#### Tại các node compute
+Chỉnh sửa cấu hình
+```
+sed -i 's/#listen_tls = 0/listen_tls = 0/g' /etc/libvirt/libvirtd.conf
+sed -i 's/#listen_tcp = 1/listen_tcp = 1/g' /etc/libvirt/libvirtd.conf
+sed -i 's/#auth_tcp = "sasl"/auth_tcp = "none"/g' /etc/libvirt/libvirtd.conf
+sed -i 's/#LIBVIRTD_ARGS="--listen"/LIBVIRTD_ARGS="--listen"/g' /etc/sysconfig/libvirtd
+```
+
+Khởi động lại service
+```
+systemctl restart libvirtd
+systemctl restart openstack-nova-compute.service
+```
+
+Nếu sử dụng block device, sửa file `nova.conf`
+```
+[libvirt]
+block_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE, VIR_MIGRATE_PEER2PEER, VIR_MIGRATE_LIVE, VIR_MIGRATE_NON_SHARED_INC
+```
+
+Khởi động lại dịch vụ
+```
+systemctl restart openstack-nova-compute.service
+```
+
+### Live migrate VM
+> #### Thực hiện trên node Controller
+Kiểm tra danh sách các VM
+```
+openstack server list --long
++--------------------------------------+----------+--------+------------+-------------+------------------------------------------------+------------+----------+-------------+--------------------------------------+-------------------+----------+------------+
+| ID                                   | Name     | Status | Task State | Power State | Networks                                       | Image Name | Image ID | Flavor Name | Flavor ID                            | Availability Zone | Host     | Properties |
++--------------------------------------+----------+--------+------------+-------------+------------------------------------------------+------------+----------+-------------+--------------------------------------+-------------------+----------+------------+
+| 905d3d6a-8e5b-4a83-add8-88e6a24d13a3 | U20-v4   | ACTIVE | None       | Running     | private01=192.168.1.147; public01=10.10.32.174 |            |          | flv_1c1r    | c8e18df3-50f0-4e12-af58-6ea631da4915 | nova              | compute1 |            |
+| 58607cad-aa47-4546-8531-4de7a1bdbb28 | vm02-ovc | ACTIVE | None       | Running     | public01=10.10.32.173                          |            |          | flv_ovc     | 54da83c2-c6cb-4b89-b8db-7c1cf7c2285c | nova              | compute1 |            |
++--------------------------------------+----------+--------+------------+-------------+------------------------------------------------+------------+----------+-------------+--------------------------------------+-------------------+----------+------------+
+```
+
+Xem danh sách các node có thể migrate tới
+```
+openstack compute service list
++----+----------------+------------+----------+---------+-------+----------------------------+
+| ID | Binary         | Host       | Zone     | Status  | State | Updated At                 |
++----+----------------+------------+----------+---------+-------+----------------------------+
+|  5 | nova-conductor | controller | internal | enabled | up    | 2020-08-05T07:39:44.000000 |
+|  6 | nova-scheduler | controller | internal | enabled | up    | 2020-08-05T07:39:45.000000 |
+|  7 | nova-compute   | compute2   | nova     | enabled | up    | 2020-08-05T07:39:40.000000 |
+|  8 | nova-compute   | compute1   | nova     | enabled | up    | 2020-08-05T07:39:41.000000 |
++----+----------------+------------+----------+---------+-------+----------------------------+
+```
+
+Kiểm tra tài nguyên tại node `compute2`
+```
+openstack host show compute2
++----------+------------+-----+-----------+---------+
+| Host     | Project    | CPU | Memory MB | Disk GB |
++----------+------------+-----+-----------+---------+
+| compute2 | (total)    |   4 |      7821 |      47 |
+| compute2 | (used_now) |   0 |       512 |       0 |
+| compute2 | (used_max) |   0 |         0 |       0 |
++----------+------------+-----+-----------+---------+
+```
+
+Vào console của VM, đặt lệnh ping:
+```
+ping 8.8.8.8
+```
+
+Ta thực hiện migrate VM: `U20-v4` từ `compute1` sang `compute2`
+
+- Lệnh này dùng với các VM dùng `shared storage`
+    ```
+    openstack server migrate 905d3d6a-8e5b-4a83-add8-88e6a24d13a3 --live-migration --host compute2
+    ```
+
+- Lệnh dùng với VM boot từ local: Cần thiết lập `QEMU-native TLS`
+    Đọc thêm: [Configmigrate](https://docs.openstack.org/nova/train/admin/configuring-migrations.html#securing-live-migration-streams) và [Secure live migration with QEMU-native TLS](https://docs.openstack.org/nova/train/admin/secure-live-migration-with-qemu-native-tls.html)
+    ```
+    openstack server migrate 905d3d6a-8e5b-4a83-add8-88e6a24d13a3 --live-migration --block-migration --host compute2
+    ```
+
+Sau khi hoàn thành, kiểm tra lại:
+```
+openstack server show U20-v4
++-------------------------------------+----------------------------------------------------------+
+| Field                               | Value                                                    |
++-------------------------------------+----------------------------------------------------------+
+| OS-DCF:diskConfig                   | AUTO                                                     |
+| OS-EXT-AZ:availability_zone         | nova                                                     |
+| OS-EXT-SRV-ATTR:host                | compute2                                                 |
+| OS-EXT-SRV-ATTR:hypervisor_hostname | compute2                                                 |
+| OS-EXT-SRV-ATTR:instance_name       | instance-0000000b                                        |
+| OS-EXT-STS:power_state              | Running                                                  |
+| OS-EXT-STS:task_state               | None                                                     |
+| OS-EXT-STS:vm_state                 | active                                                   |
+| OS-SRV-USG:launched_at              | 2020-08-04T15:51:28.000000                               |
+| OS-SRV-USG:terminated_at            | None                                                     |
+| accessIPv4                          |                                                          |
+| accessIPv6                          |                                                          |
+| addresses                           | private01=192.168.1.147; public01=10.10.32.174           |
+| config_drive                        |                                                          |
+| created                             | 2020-08-04T15:51:07Z                                     |
+| flavor                              | flv_1c1r (c8e18df3-50f0-4e12-af58-6ea631da4915)          |
+| hostId                              | 51bdefb77b714d0ede0eb427e38003eb2abb927b9aa78079782f04b3 |
+| id                                  | 905d3d6a-8e5b-4a83-add8-88e6a24d13a3                     |
+| image                               |                                                          |
+| key_name                            | None                                                     |
+| name                                | U20-v4                                                   |
+| progress                            | 0                                                        |
+| project_id                          | 5b4c1d2155004acf849cd3aac03b8f36                         |
+| properties                          |                                                          |
+| security_groups                     | name='default'                                           |
+|                                     | name='default'                                           |
+| status                              | ACTIVE                                                   |
+| updated                             | 2020-08-05T09:02:43Z                                     |
+| user_id                             | 294c5c6181d442c68a13d5b615c4f031                         |
+| volumes_attached                    | id='93ef3e86-f3e8-4019-a1a4-03a2b73dbb6e'                |
++-------------------------------------+----------------------------------------------------------+
+```
+Console của VM, vẫn thực hiện lệnh ping:
+
+<img src="..\images\Screenshot_87.png">
 
 
 
