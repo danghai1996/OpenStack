@@ -261,7 +261,7 @@ Ta thực hiện migrate VM: `U20-v4` từ `compute1` sang `compute2`
     ```
 
 - Lệnh dùng với VM boot từ local: Cần thiết lập `QEMU-native TLS`
-    Đọc thêm: [Configmigrate](https://docs.openstack.org/nova/train/admin/configuring-migrations.html#securing-live-migration-streams) và [Secure live migration with QEMU-native TLS](https://docs.openstack.org/nova/train/admin/secure-live-migration-with-qemu-native-tls.html)
+    **Đọc thêm:** [Configmigrate](https://docs.openstack.org/nova/train/admin/configuring-migrations.html#securing-live-migration-streams) và [Secure live migration with QEMU-native TLS](https://docs.openstack.org/nova/train/admin/secure-live-migration-with-qemu-native-tls.html)
     ```
     openstack server migrate 905d3d6a-8e5b-4a83-add8-88e6a24d13a3 --live-migration --block-migration --host compute2
     ```
