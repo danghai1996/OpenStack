@@ -265,6 +265,9 @@ Ta thực hiện migrate VM: `U20-v4` từ `compute1` sang `compute2`
     ```
     openstack server migrate 905d3d6a-8e5b-4a83-add8-88e6a24d13a3 --live-migration --block-migration --host compute2
     ```
+    ```
+    nova live-migration  --block-migrate <server> <compute_node>
+    ```
 
 Sau khi hoàn thành, kiểm tra lại:
 ```
