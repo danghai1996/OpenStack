@@ -1,6 +1,9 @@
 # Nova-Scheduler
 
 # 1. Host aggreate vs Availability zone
+
+<img src="..\images\Screenshot_94.png">
+
 ## 1.1. Host aggregate
 Là một cơ chế tạo ra một nhóm logic để phân vùng `availability zone`, `host aggregate` trong OPS tập hợp các Compute Node được chỉ định và liên kết với metadata. Trong khi các `availability zones` được hiển thị cho các users thì `host aggregate` chỉ hiển thị cho Administrator.
 
