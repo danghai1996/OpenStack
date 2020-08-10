@@ -75,3 +75,6 @@
 5. Gán lại các network stack.
 
 6. Tạo lại các iptables rules.
+
+# Tham khảo
+- https://github.com/lacoski/OpenStack-Note/blob/master/docs/nova/work-flow-launch-instance.md
