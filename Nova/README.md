@@ -15,3 +15,15 @@
 [7. Nova Placement và Nova Conductor](./07-nova-placement-conductor.md)
 
 [8. Nova Scheduler](./08-nova_scheduler.md)
+
+[9. Migrate máy ảo trong Openstack](./09-migrate.md)
+
+[10. Overcommit RAM, CPU trong Openstack](./10-overcommit.md)
+
+[11. Resize máy ảo](./11-resizeVM.md)
+
+[12.1. Rescue máy ảo boot từ local disk](./12-1-rescue-localdisk.md)
+
+[12.2. Rescue máy ảo boot từ volume](./12-2-rescue-volume.md)
+
+[13. Evacuate máy ảo](./13-evacuate.md)
