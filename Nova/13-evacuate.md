@@ -49,5 +49,3 @@ nova evacuate [--password pass] [--on-shared-storage] instance_name [target_host
 - `--on-shared-storage` : Tất cả mọi file của máy ảo đều ở trên shared storage
 - `instance_name` : Tên máy ảo cần evacuate
 - `target_host` : Host chứa máy ảo sau khi rebuild, nếu không lựa chọn thì scheduler sẽ làm nhiệm vụ này.
-
-Ta 
