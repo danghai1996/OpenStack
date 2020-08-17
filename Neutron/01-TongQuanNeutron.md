@@ -19,7 +19,7 @@ Openstack networking cung cấp 1 danh sách các plug-in cho phép tương tác
 Các plugin và các agent này cho phép gắn và gỡ các ports, tạo ra network hay subnet, và đánh địa chỉ IP. Lựa chọn plugin và agents nào là tùy thuộc vào nhà cung cấp và công nghệ sử dụng trong hệ thống cloud nhất định. Điều quan trọng là tại một thời điểm chỉ sử dụng được một plug-in.
 
 Các Neutron plugin:
-- Là giao diện kết nối giữa Neutron và các công nghệ back-end nhu SDN, Cisco, VMware NSX. Nhờ đó, người dùng Neutron có thể tận dụng các tính năng nâng cao của các thiết bị mạng hoặc phần mềm mạng của bên thứ 3. Các plug-in bao gồm: Open vSwitch, Cisco UCS/Nexus, Linux Bridge, Nicira Network Virtualization Platform, Ryu OpenFlow Controller, NEC OpenFlow.
+- Là giao diện kết nối giữa Neutron và các công nghệ back-end như SDN, Cisco, VMware NSX. Nhờ đó, người dùng Neutron có thể tận dụng các tính năng nâng cao của các thiết bị mạng hoặc phần mềm mạng của bên thứ 3. Các plug-in bao gồm: Open vSwitch, Cisco UCS/Nexus, Linux Bridge, Nicira Network Virtualization Platform, Ryu OpenFlow Controller, NEC OpenFlow.
 - Một trong các plugin không trực tiếp liên quan tới công nghệ bên thứ ba nhưng là 1 plugin quan trọng đó là ML2 (Modular Layer 2) plugin. Plugin này cho phép hoạt động đồng thời của nhiều công nghệ mạng hỗn hợp trong Neutron.
 
 ### Messaging queue
@@ -32,7 +32,11 @@ Có hai loại network
 - Provider
 - Self-service networks
 
-## Provider networks
+## 2.1. Provider networks
+<img src="..\images\Screenshot_97.png">
+
+<img src="..\images\Screenshot_98.png">
+
 Provider networks cung cấp kết nối layer 2 cho các máy ảo với các tùy chọn hỗ trợ cho dịch vụ DHCP và metadata. Các kết nối này thường sử dụng VLAN (802.1q) để nhận diện và tách biệt nhau. Nhìn chung, Provider networks cũng cấp sự đơn giản, hiệu quả và sự minh bạch, linh hoạt trong chi phí. Mặc định chỉ có duy nhất người quản trị (admin) mới có thể tạo hoặc cập nhật provider networks bởi nó yêu cầu phải cấu hình thiết bị vật lí.
 
 Bên cạnh đó, các provider network chỉ quản lí kết nối ở layer 2 cho máy ảo, vì thế nó thiếu đi một số tính năng ví dụ như định tuyến và gán floating IP.
@@ -41,10 +45,14 @@ Các nhà khai thác đã quen thuộc với kiến trúc mạng ảo dựa trê
 
 Vì các thành phần chịu trách nhiệm cho việc vận hành kết nối layer 3 sẽ ảnh hưởng tới hiệu năng và tính tin cậy nên provider networks chuyển các kết nối này xuống tầng vật lí. Tức nếu kết nối mạng có vấn đề thì provider network cũng bị ảnh hưởng.
 
-### Routed provider networks
+### 2.2. Routed provider networks
 Routed provider networks cung cấp kết nối ở layer 3 cho các máy ảo. Các network này map với những networks layer 3 đã tồn tại. Cụ thể hơn, các layer-2 segments của provider network sẽ được gán các router gateway giúp chúng có thể được định tuyến ra bên ngoài chứ thực chất Networking service không cung cấp khả năng định tuyến. Routed provider networks tất nhiên sẽ có hiệu suất thấp hơn so với provider networks.
 
-## Self-service networks
+## 2.3. Self-service networks
+<img src="..\images\Screenshot_99.png">
+
+<img src="..\images\Screenshot_100.png">
+
 Self-service networks được ưu tiên ở các projects thông thường để quản lí networks mà không cần quản trị viên (quản lí network trong project). Các networks này là ảo và nó yêu cầu các routers ảo để giao tiếp với provider và external networks. Self-service networks cũng đồng thời cung cấp dịch vụ DHCP và metadata cho máy ảo.
 
 Trong hầu hết các trường hợp, self-service networks sử dụng các giao thức như VXLAN hoặc GRE bởi chúng hỗ trợ nhiều hơn là VLAN tagging (802.1q). Bên cạnh đó, Vlans cũng thường yêu cầu phải cấu hình thêm ở tầng vật lí.
