@@ -91,23 +91,35 @@ vni_ranges = 1:1000
 
 - `firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver` : driver cho security groups firewall trong l2 agent
 
+## File `/etc/neutron/metadata_agent.ini`
+Cấu hình trên node Compute:
+```conf
+[DEFAULT]
+nova_metadata_host = 10.10.31.166
+metadata_proxy_shared_secret = Welcome123
+[cache]
+```
+- `nova_metadata_host` : Địa chỉ IP hoặc DNS name của Nova metadata
+- `metadata_proxy_shared_secret` : Secret key để xác minh. Nó cần khớp với config key `password` của Nova trong section `[neutron]` của Nova
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+## File `/etc/neutron/dhcp_agent.ini`
+Cấu hình trên node Compute
+```conf
+[DEFAULT]
+interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+enable_isolated_metadata = True
+dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
+force_metadata = True
+```
+- `interface_driver` : Driver được sử dụng để quản lý virtual interface
+- `enable_isolated_metadata` : Máy chủ DHCP có thể hỗ trợ cung cấp metadata cho các mạng isolated. Tùy chọn này không có tác dụng nào khi `force_metadata` được đặt giá trị là True
+- `dhcp_driver` : Driver sử dụng để quản lý DHCP server
+- `force_metadata` : Đặt giá trị này sẽ buộc DHCP server phải kết nối tới các host routes cụ thể vào DHCP request. Nếu tùy chọn này được đặt, thì metadata service sẽ được kích hoạt cho tất cả các mạng.
 
 
 # Xem thêm
+- https://docs.openstack.org/neutron/train/configuration/config.html
+
 - https://docs.openstack.org/neutron/train/configuration/config.html
 
 - https://docs.openstack.org/neutron/train/configuration/ml2-conf.html
