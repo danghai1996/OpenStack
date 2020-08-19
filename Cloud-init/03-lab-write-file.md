@@ -15,8 +15,10 @@
 
     #Write_file
     ```
-3. Mã hóa gzip: dùng tool trên mạng
-    http://www.txtwizard.net/compression
+3. Mã hóa gzip:
+    ```
+    cat <đường_dẫn_file> | gzip | base64 -w0 
+    ```
 
 ### B2: Tạo VM, truyền cloud-init
 #### Truyền văn bản dạng raw
