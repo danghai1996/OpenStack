@@ -19,6 +19,10 @@
     ```
     cat <đường_dẫn_file> | gzip | base64 -w0 
     ```
+    Giải mã ngược:
+    ```
+    cat <file_mã_hóa> | base64 -d | gunzip
+    ```
 
 ### B2: Tạo VM, truyền cloud-init
 #### Truyền văn bản dạng raw
