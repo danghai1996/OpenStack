@@ -1,6 +1,5 @@
 # Module Write file
 
-## Chú ý
 - Module cho phép tạo file trong quá trình tạo VM.
 - Encodeding bằng base64, gzip hoặc kết hợp cả 2
 - Không nên lưu file vào thư mục `/tmp` do khi boot có thể service `systemd-tmpfiles-clean` sẽ khiến các file thêm bị xóa
@@ -16,11 +15,35 @@
 
     #Write_file
     ```
+3. Mã hóa gzip:
+    ```
+    cat <đường_dẫn_file> | gzip | base64 -w0 
+    ```
+    Giải mã ngược:
+    ```
+    cat <file_mã_hóa> | base64 -d | gunzip
+    ```
 
 ### B2: Tạo VM, truyền cloud-init
+#### Truyền văn bản dạng raw
 ```yaml
 #cloud-config
-password: 'hai1996'
+password: 'password_VM'
+chpasswd: { expire: False }
+ssh_pwauth: True
+write_files:
+- content: |
+    Test write_files
+
+    #Write_file
+  path: /root/test
+  permissions: '0555'
+```
+
+### Truyền văn bản mã hóa base64
+```yaml
+#cloud-config
+password: 'password_VM'
 chpasswd: { expire: False }
 ssh_pwauth: True
 write_files:
@@ -32,12 +55,22 @@ write_files:
   owner: root:root
   path: /root/write_files
   permissions: '0755'
-- content: |
-    Test write_files
-
-    #Write_file
-  path: /root/test
-  permissions: '0555'
 ```
 
-# Kiểm chứng giới hạn nội dung truyền
+
+### Truyền văn bản mã hóa base64
+```yaml
+#cloud-config
+#cloud-config
+password: 'password_VM'
+chpasswd: { expire: False }
+ssh_pwauth: True
+write_files:
+- encoding: gzip
+  content: !!binary |
+      H4sIAAAAAAAA/81WbW/bNhD+rl9xc1zYTivRUtI0S+cOQVJsBdo0WzZgQN0atEjFxCRKJSk7QdL/viMl2XLipGn2gimBTB3vnrvjHR9y6zsyFZJMqZ55W3B8CIpLvoCCar3IFUPZEZWz4z/gZEblzzmFozQvGfzGaebh5E/cgJBJDtml/pxOVJ6bibNlQCUDRieUZUL2q2k3rucHKx95ymrhJBx1+zE1QEqtSJrHNCVMKB4bZ0p0rERhNNHclEVgLgxcw7niReV+hF9xacBn0Bv1wE8if9AGjx4J7qYtxp0ORPFIaDTchIklqDBFASovDYdzXOj9wP2hgeYMfAk9olVMrjQJtnEA2+P+h0/
+      ....
+  owner: root:root
+  path: /root/write_files
+  permissions: '0755'
+```
