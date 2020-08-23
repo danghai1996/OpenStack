@@ -58,7 +58,7 @@ write_files:
 ```
 
 
-### Truyền văn bản mã hóa base64
+### Truyền văn bản mã hóa gzip
 ```yaml
 #cloud-config
 #cloud-config
