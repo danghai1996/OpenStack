@@ -213,6 +213,78 @@ Khởi động lại máy ảo
 openstack server reboot <tên_instance>
 ```
 
+## Router
+Khởi tạo 1 self-service network:
+```
+openstack network create self-net
+```
+
+Khởi tạo subnet cho self-service network vừa tạo:
+```
+openstack subnet create --subnet-range 192.168.1.0/24 --gateway 192.168.1.1 --dns-nameserver 8.8.8.8 --network self-net subnet-self-net
+```
+
+### Tạo 1 router
+```
+openstack router create <tên_router>
+```
+Ví dụ:
+```
+openstack router create router1
+```
+
+### Gắn external network làm gateway để truy cập internet , còn các mạng self-service cắm vào các interface để tham gia định tuyến
+```
+openstack network set --external <tên_external_network>
+
+openstack router set <tên_router> --external-gateway <tên_external_network>
+
+openstack router add subnet <tên_router> <tên_subnet_self-service>
+```
+
+Ví dụ:
+```
+openstack network set --external public1
+
+openstack router set router1 --external-gateway public1
+
+openstack router add subnet router1 subnet-self-net
+```
+
+### Xem thông tin router vừa tạo
+```
+openstack router show <tên_router>
+```
+
+Ví dụ:
+```
+openstack router show router1
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Field                   | Value                                                                                                                                                                                    |
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| admin_state_up          | UP                                                                                                                                                                                       |
+| availability_zone_hints |                                                                                                                                                                                          |
+| availability_zones      |                                                                                                                                                                                          |
+| created_at              | 2020-08-24T07:55:39Z                                                                                                                                                                     |
+| description             |                                                                                                                                                                                          |
+| distributed             | False                                                                                                                                                                                    |
+| external_gateway_info   | {"network_id": "a64987e0-1992-4a56-bf2c-b68d7755f9a3", "enable_snat": true, "external_fixed_ips": [{"subnet_id": "02890e65-8a2c-48f6-bdbb-495ebdb7bb9b", "ip_address": "10.10.32.173"}]} |
+| flavor_id               | None                                                                                                                                                                                     |
+| ha                      | False                                                                                                                                                                                    |
+| id                      | 9a0fc0a4-d01a-44ee-89ef-0723b3a4a904                                                                                                                                                     |
+| interfaces_info         | [{"subnet_id": "9252be35-4b2c-49db-93f5-490956bfc83b", "ip_address": "192.168.1.1", "port_id": "cfdd62fb-c42b-440b-bf03-79202a26885b"}]                                                  |
+| location                | cloud='', project.domain_id=, project.domain_name='Default', project.id='5b4c1d2155004acf849cd3aac03b8f36', project.name='admin', region_name='', zone=                                  |
+| name                    | router1                                                                                                                                                                                  |
+| project_id              | 5b4c1d2155004acf849cd3aac03b8f36                                                                                                                                                         |
+| revision_number         | 4                                                                                                                                                                                        |
+| routes                  |                                                                                                                                                                                          |
+| status                  | ACTIVE                                                                                                                                                                                   |
+| tags                    |                                                                                                                                                                                          |
+| updated_at              | 2020-08-24T08:32:29Z                                                                                                                                                                     |
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+```
+
+
 
 ## Xem thêm:
 - https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/security-group.html
