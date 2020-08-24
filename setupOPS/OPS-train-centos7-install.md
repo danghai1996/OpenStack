@@ -1092,7 +1092,7 @@ crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.Noo
 
 crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@10.10.31.166/nova_api
 
-crudini --set /etc/nova/nova.conf database connection = mysql+pymysql://nova:Welcome123@10.10.31.166/nova
+crudini --set /etc/nova/nova.conf database connection mysql+pymysql://nova:Welcome123@10.10.31.166/nova
 
 crudini --set /etc/nova/nova.conf api auth_strategy keystone
 
@@ -1228,7 +1228,7 @@ cp /etc/neutron/metadata_agent.ini /etc/neutron/metadata_agent.ini.bak
 Cấu hình file `/etc/neutron/neutron.conf`
 ```
 crudini --set  /etc/neutron/neutron.conf DEFAULT core_plugin ml2
-crudini --set  /etc/neutron/neutron.conf DEFAULT service_plugins
+crudini --set  /etc/neutron/neutron.conf DEFAULT service_plugins router
 crudini --set  /etc/neutron/neutron.conf DEFAULT transport_url rabbit://openstack:Welcome123@10.10.31.166
 crudini --set  /etc/neutron/neutron.conf DEFAULT auth_strategy keystone
 crudini --set  /etc/neutron/neutron.conf DEFAULT notify_nova_on_port_status_changes True
