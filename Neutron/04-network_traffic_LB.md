@@ -117,6 +117,7 @@ Với các instance kèm IP v4 Floating, trên network node sẽ thực hiện S
 
 
 **Các bước liên quan đến node Compute:**
+
 7. Physical interface (11) forward packet tới VXLAN interface (12) để mở packet
 8. Các security group rules (13) trên self-service bridge xử lý firewall và theo dõi kết nối của packet
 9. self-service bridge instance port (14) forwards packet tới interface của instance (15) thông qua `veth`
