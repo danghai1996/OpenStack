@@ -104,8 +104,8 @@ openstack security group rule create
 Ví dụ: Cho phép ping tới VM
 ```
 openstack security group rule create \
-> --protocol icmp \
-> sg-test
+--protocol icmp \
+sg-test
 ```
 
 ### 4. Hiển thị rule đang có của 1 security group
