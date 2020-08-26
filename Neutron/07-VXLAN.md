@@ -47,9 +47,90 @@ Do sự đóng gói (encapsulation) này, VXLAN có thể được gọi là thi
 ### VXLAN packet format
 <img src="..\images\Screenshot_111.png">
 
-VXLAN packet không có gì nhiều hơn một một MAC-in-UDP được đóng gói trong packet. VXLAN header se được thêm frame layer 2 gốc và được đặt trong UDP-IP packet.
+VXLAN packet không có gì nhiều hơn một một MAC-in-UDP được đóng gói trong packet. VXLAN header sẽ được thêm frame layer 2 gốc và được đặt trong UDP-IP packet.
 
 VXLAN header dài 8bytes bao gồm 24 bits VNI và một vài bits dành riêng.
 
 Frame Ethernet thông thường bao gồm địa chỉ MAC nguồn, MAC đích, Ethernet type và thêm phần VLAN_ID (802.1q) nếu có. Các frame này sẽ được đóng gói sử dụng VXLAN và thêm phần header.
 
+Phần header (8bytes) bao gồm các trường quan trọng sau:
+- **VXLAN header:**
+
+    - **Flags**: 8 bits, trong đo bit thứ 5 (I flag) được thiết lập để chỉ ra đó là một frame có VNI có gia trị. 7 bits còn lại được dùng để dự trữ và tất cả đều bằng 0.
+
+    - **VNI**: 24 bit cung cấp định danh duy nhất cho VXLAN segment. Các VM trong các VXLAN khác nhau không thể giao tiếp với nhau.
+
+- **Outer UDP Header**: port nguồn của outer UDP được gán tự động và sinh ra bởi VTEP và port đích thông thường được sử dụng là 4789 (có thể chọn port khác).
+
+- **Outer IP header**: Cung cấp địa chỉ nguồn của VTEP, nguồn kết nối với VM bên trong. Địa chỉ IP outer đích là địa chỉ IP của VTEP nhận frame.
+
+- **Outer Ethernet Header**: cung cấp địa chỉ MAC nguồn của VTEP có khung frame ban đầu. Địa chỉ MAC đích là địa chỉ của hop tiếp theo được định tuyến bởi VTEP. Outer Ethernet header có thể đưuọc gắn tag theo chuẩn 802.1q trong quá trình vận chuyển trong mạng.
+
+# 2. Cách hoạt động của VXLAN
+VXLAN hoạt động dựa trên việc gửi các frame thông qua giao thức IP Multicast.
+
+Trong quá trình cấu hình VXLAN, cần cấp phát địa chỉ IP multicast để gán với VXLAN sẽ tạo. Mỗi IP multicast sẽ đại diện cho một VXLAN.
+
+Dưới đây là hoạt động chi tiết các frame đi qua VTEP và đi qua mạng vật lý trong mạng. VXLAN triển khai trên một mạng logic với mô hình như sau:
+
+<img src="..\images\Screenshot_112.png">
+
+## 2.1. VM gửi request tham gia vào group multicast
+Giả sử một mạng logic trên 4 host như hình. Topo mạng vật lý cung cấp một VLAN 2000 để vận chuyển các lưu lượng VXLAN. Trong trường hợp này, chỉ IGMP snooping và IGMP querier được cấu hình trên mạng vật lý. Một vài bước sẽ được thực hiện trước khi các thiết bị trên mạng vật lý có thể xử lý các gói tin multicast. 
+
+**IGMP Packet flows:**
+
+<img src="..\images\Screenshot_113.png">
+
+- Máy ảo VM (MAC1) trên Host 1 được kết nối tới một mạng logical layer 2 mà có VXLAN 5001 ở đó.
+- VTEP trên Host 1 gửi bản tin IGMP để join vào mạng và join vào nhóm multicast 239.1.1.100 để kết nối tới VXLAN 5001.
+- Tương tự, máy ảo VM (MAC2) trên Host 4 được kết nối tới mạng mà có VXLAN 5001.
+- VTEP trên Host 4 gửi bản tin IGMP join vào mạng và join vào nhóm multicast 239.1.1.100 để kết nối tới VXLAN 5001.
+
+    Host 2 và Host 3 VTEP không join nhóm multicast bởi vì chúng không có máy ảo chạy trên nó và cần kết nối tới VXLAN 5001. Chỉ VTEP nào cần tham gia vào nhóm multicast mới gửi request join vào nhóm.
+
+**Multicast Packet flow:**
+
+<img src="..\images\Screenshot_114.png">
+
+- Máy ảo VM (MAC1) trên Host 1 sinh ra một frame broadcast.
+- VTEP trên Host 1 đóng gói frame broadcast này vào một UDP header với IP đích là địa chỉ IP multicast 239.1.1.100
+- Mạng vật lý sẽ chuyển các gói tin này tới Host 4 VTEP, vì nó đã join vào nhóm multicast 239.1.1.100. Host 2 và 3 VTEP sẽ không nhận được frame broadcast này.
+- VTEP trên Host 4 đầu tiên đối chiếu header được đóng gói, nếu 24 bit VNI trùng với ID của VXLAN. Nó sẽ decapsulated lớp gói được VTEP host 1 đóng vào và chuyển tới máy ảo VM đích (MAC2).
+
+## 2.2. VTEP học và tạo bảng forwarding
+Ban đầu, mỗi VTEP sau khi join vào nhóm IP multicast đều có 1 bảng forwarding table như dưới đây:
+
+<img src="..\images\Screenshot_115.png">
+
+Các bước sau sẽ được thực hiện để VTEP học và ghi vào bảng forwarding table:
+
+- Đầu tiên, 1 bản tin ARP request được gửi từ VM MAC1 để tìm địa chỉ MAC của máy ảo đích nó cần gửi tin đến VM MAC2 trên Host2. ARP request là bản tin broadcast.
+
+<img src="..\images\Screenshot_116.png">
+
+Host 2 VTEP – Forwarding table entry:
+
+- VM trên Host 1 gửi bản tin ARP request với địa chỉ MAC đích là “FFFFFFFFFFF”
+- VTEP trên Host 1 đóng gói vào frame Ethernet broadcast vào một UDP header với địa chỉ IP đích multicast và địa chỉ IP nguồn 10.20.10.10 của VTEP.
+- Mạng vật lý sẽ chuyển gói tin multicast tới các host join vào nhóm IP multicast “239.1.1.10”.
+- VTEP trên Host 2 nhận được gói tin đã đóng gói. Dựa vào outer và inner header, nó sẽ tạo một entry trong bảng forwarding chỉ ra mapping giữa MAC của máy VM MAC1 ứng với VTEP nguồn và địa chỉ IP của nó. VTEP cũng kiểm tra VNI của gói tin để quyết định sẽ chuyển tiếp gói tin vào trong cho máy ảo VM bên trong nó hay không.
+- Gói tin được de-encapsulated và chuyển vào tới VM mà được kết nối tới VXLAN 5001.
+
+Hình sau minh họa cách mà VTEP tìm kiếm thông tin trong forwarding table để gửi unicast trả lời lại từ VM từ VTEP 2:
+
+<img src="..\images\Screenshot_117.png">
+
+- Máy ảo VM MAC2 trên Host 2 đáp trả lại bản tin ARP request bằng cách gửi unicast lại gói tin với địa chỉ MAC đích là địa chỉ MAC1
+- Sau khi nhận được gói tin unicast đó, VTEP trên Host 2 thực hiện tìm kiếm thông tin trong bảng forwarding table và lấy được thông tin ứng với MAC đích là MAC 1. VTEP sẽ biết rằng phải chuyển gói tin tới máy ảo VM MAC 1 bằng cách gửi gói tin tới VTEP có địa chỉ “10.20.10.10”.
+- VTEP tạo bản tin unicast với địa chỉ đích là “10.20.10.10” và gửi nó đi.
+
+Trên Host 1, VTEP sẽ nhận được gói tin unicast và cũng học được vị trí của VM MAC2 như hình sau:
+
+<img src="..\images\Screenshot_118.png">
+
+Host 1 VTEP – Forwarding table entry
+
+- Gói tin được chuyển tới Host 1
+- VTEP trên Host 1 nhận được gói tin. Dựa trên outer và inner header, nó tạo một entry trong bảng forwarding ánh xạ địa chỉ MAC 2 và VTEP trên Host 2. VTEP cũng check lại VNI và quyết định gửi frame vào các VM bên trong.
+- Gói tin được de-encapsulated và chuyển tới chính xác VM có MAC đích trùng và nằm trong VXLAN 5001.
