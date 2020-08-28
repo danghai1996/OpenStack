@@ -137,7 +137,7 @@ dnsmasq là 1 phần mềm nguồn mở hỗ trợ chức năng DHCP và DNS. Ne
 
 3. Sau khi VM được bật, Neutron sẽ cập nhật `/etc/resolv.conf` của VM và sử dụng IP của dhcp port nhưu là DNS address (dnsmasq sẽ lắng nghe từ địa chỉ này) để thực hiện chức năng dns. 
 
-# 8. Phân tích triển khai DHCP HA
+# 8. Phân tích triển khai DHCP HA (High Availability)
 **Tiền phân tích:**
 
 Sau khi triển khai dhcp agent hoàn tất, dhcp đã chạy trên node network và state đã ok
