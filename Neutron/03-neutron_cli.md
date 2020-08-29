@@ -214,6 +214,39 @@ openstack server reboot <tên_instance>
 ```
 
 ## Router
+Để cấu hình tạo router cần phải cấu hình plugin và l3-agent
+
+### 1. Cấu hình service plugins
+Sửa file `/etc/neutron/neutron.conf` trên node Controller
+```
+[DEFAULT]
+service_plugins = router
+```
+
+### 2. Bật service l3-agent trên node controller
+```
+systemctl start neutron-l3-agent.service
+systemctl enable neutron-l3-agent.service
+```
+Kiểm tra lại
+```
+systemctl status neutron-l3-agent.service
+```
+Kiểm tra agent
+```
+openstack network agent list
+```
+<img src="..\images\Screenshot_141.png">
+
+Cấu hình file: `/etc/neutron/l3_agent.ini`
+```
+[DEFAULT]
+interface_driver = linuxbridge
+```
+
+Bắt đầu tạo router:
+
+### Tạo mạng self-service
 Khởi tạo 1 self-service network:
 ```
 openstack network create self-net
@@ -235,8 +268,6 @@ openstack router create router1
 
 ### Gắn external network làm gateway để truy cập internet , còn các mạng self-service cắm vào các interface để tham gia định tuyến
 ```
-openstack network set --external <tên_external_network>
-
 openstack router set <tên_router> --external-gateway <tên_external_network>
 
 openstack router add subnet <tên_router> <tên_subnet_self-service>
@@ -244,8 +275,6 @@ openstack router add subnet <tên_router> <tên_subnet_self-service>
 
 Ví dụ:
 ```
-openstack network set --external public1
-
 openstack router set router1 --external-gateway public1
 
 openstack router add subnet router1 subnet-self-net
@@ -264,15 +293,15 @@ openstack router show router1
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | admin_state_up          | UP                                                                                                                                                                                       |
 | availability_zone_hints |                                                                                                                                                                                          |
-| availability_zones      |                                                                                                                                                                                          |
-| created_at              | 2020-08-24T07:55:39Z                                                                                                                                                                     |
+| availability_zones      | nova                                                                                                                                                                                     |
+| created_at              | 2020-08-29T08:29:02Z                                                                                                                                                                     |
 | description             |                                                                                                                                                                                          |
 | distributed             | False                                                                                                                                                                                    |
-| external_gateway_info   | {"network_id": "a64987e0-1992-4a56-bf2c-b68d7755f9a3", "enable_snat": true, "external_fixed_ips": [{"subnet_id": "02890e65-8a2c-48f6-bdbb-495ebdb7bb9b", "ip_address": "10.10.32.173"}]} |
+| external_gateway_info   | {"network_id": "a64987e0-1992-4a56-bf2c-b68d7755f9a3", "enable_snat": true, "external_fixed_ips": [{"subnet_id": "02890e65-8a2c-48f6-bdbb-495ebdb7bb9b", "ip_address": "10.10.32.179"}]} |
 | flavor_id               | None                                                                                                                                                                                     |
 | ha                      | False                                                                                                                                                                                    |
-| id                      | 9a0fc0a4-d01a-44ee-89ef-0723b3a4a904                                                                                                                                                     |
-| interfaces_info         | [{"subnet_id": "9252be35-4b2c-49db-93f5-490956bfc83b", "ip_address": "192.168.1.1", "port_id": "cfdd62fb-c42b-440b-bf03-79202a26885b"}]                                                  |
+| id                      | a7fcc647-1f69-4e06-946b-872e5e7ff7ba                                                                                                                                                     |
+| interfaces_info         | [{"subnet_id": "bff09b33-a595-4897-bc60-b8208d5d2a18", "ip_address": "192.168.1.1", "port_id": "94dccaee-3a6c-4c40-8380-fc1ddb6c01c9"}]                                                  |
 | location                | cloud='', project.domain_id=, project.domain_name='Default', project.id='5b4c1d2155004acf849cd3aac03b8f36', project.name='admin', region_name='', zone=                                  |
 | name                    | router1                                                                                                                                                                                  |
 | project_id              | 5b4c1d2155004acf849cd3aac03b8f36                                                                                                                                                         |
@@ -280,9 +309,43 @@ openstack router show router1
 | routes                  |                                                                                                                                                                                          |
 | status                  | ACTIVE                                                                                                                                                                                   |
 | tags                    |                                                                                                                                                                                          |
-| updated_at              | 2020-08-24T08:32:29Z                                                                                                                                                                     |
+| updated_at              | 2020-08-29T08:31:54Z                                                                                                                                                                     |
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
+
+### Xóa Self-service subnet đang gắn vào Router
+Xem router đang chứa subnet nào:
+```
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Field                   | Value                                                                                                                                                                                                                                                                          |
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| admin_state_up          | UP                                                                                                                                                                                                                                                                             |
+| availability_zone_hints |                                                                                                                                                                                                                                                                                |
+| availability_zones      | nova                                                                                                                                                                                                                                                                           |
+| created_at              | 2020-08-29T08:29:02Z                                                                                                                                                                                                                                                           |
+| description             |                                                                                                                                                                                                                                                                                |
+| distributed             | False                                                                                                                                                                                                                                                                          |
+| external_gateway_info   | {"network_id": "a64987e0-1992-4a56-bf2c-b68d7755f9a3", "enable_snat": true, "external_fixed_ips": [{"subnet_id": "02890e65-8a2c-48f6-bdbb-495ebdb7bb9b", "ip_address": "10.10.32.179"}]}                                                                                       |
+| flavor_id               | None                                                                                                                                                                                                                                                                           |
+| ha                      | False                                                                                                                                                                                                                                                                          |
+| id                      | a7fcc647-1f69-4e06-946b-872e5e7ff7ba                                                                                                                                                                                                                                           |
+| interfaces_info         | [{"subnet_id": "bff09b33-a595-4897-bc60-b8208d5d2a18", "ip_address": "192.168.1.1", "port_id": "94dccaee-3a6c-4c40-8380-fc1ddb6c01c9"}, {"subnet_id": "03292a0d-e685-4c78-a8bc-702fa8e89ca0", "ip_address": "192.168.2.1", "port_id": "a8aeacdb-71a2-42e0-a2a5-a9d5d798e139"}] |
+| location                | cloud='', project.domain_id=, project.domain_name='Default', project.id='5b4c1d2155004acf849cd3aac03b8f36', project.name='admin', region_name='', zone=                                                                                                                        |
+| name                    | router1                                                                                                                                                                                                                                                                        |
+| project_id              | 5b4c1d2155004acf849cd3aac03b8f36                                                                                                                                                                                                                                               |
+| revision_number         | 5                                                                                                                                                                                                                                                                              |
+| routes                  |                                                                                                                                                                                                                                                                                |
+| status                  | ACTIVE                                                                                                                                                                                                                                                                         |
+| tags                    |                                                                                                                                                                                                                                                                                |
+| updated_at              | 2020-08-29T08:55:00Z                                                                                                                                                                                                                                                           |
++-------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+```
+
+Xóa subnet ra khỏi Router:
+```
+openstack router remove subnet router1 03292a0d-e685-4c78-a8bc-702fa8e89ca0
+```
+
 
 
 
