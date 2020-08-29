@@ -346,9 +346,6 @@ Xóa subnet ra khỏi Router:
 openstack router remove subnet router1 03292a0d-e685-4c78-a8bc-702fa8e89ca0
 ```
 
-
-
-
 ## Xem thêm:
 - https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/security-group.html
 - https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/security-group-rule.html
