@@ -88,7 +88,7 @@ Từ góc độ triển khai phần mềm, không khó để các nhà phát tri
 Hơn nữa, ý định ban đầu của người thiết kế Neutron là định nghĩa phần mềm thuần túy, không cần thiết kế phần cứng mới, nhưng có thể phù hợp với các phần cứng hiện có. Đây là 1 ý tưởng thiết kế thực dụng. Các phần tử mạng physical/virtual network bên dưới được gọi thông qua Plugin-driver. Chức năng cung cấp sự hỗ trợ cho các service cấp trên. Đặc điểm này giúp Neutron nhận được sự quan tâm rộng rãi trong ngành.
 
 # 5. Mô hình triển khai mạng Neutron
-Trong quá trình tìm hiểu mô hình triển khai mạng Neutron, chúng tôi chủ yếu tìm ra ba câu hỏi:
+**Trong quá trình tìm hiểu mô hình triển khai mạng Neutron, chúng tôi chủ yếu tìm ra ba câu hỏi:**
 
 - Làm thế nào để Neutron hỗ trợ nhiều loại network (VLAN, VXLAN) ?
 - Làm cách nào để các máy ảo giữa các node compute giao tiếp trong cùng 1 tenant network?
@@ -147,9 +147,84 @@ vni_ranges = 1:1000
 tunnel_id_ranges = 1:1000
 ```
 
-**Một lần nữa, VLAN ID của local network được chỉ định bởi thuật toán logic , trong khi VID của tenant network được tùy chỉnh bởi người dùng.**
+**Một lần nữa, VLAN ID của local network được chỉ định bởi thuật toán logic, trong khi VID của tenant network được tùy chỉnh bởi người dùng.**
 
 Bạn có thể tự hỏi tại sao cần thực hiện chuyển đổi VID nội bộ và VID external khi tenant network và local network có cùng loại VLAN?
 
 Để trả lời câu hỏi này, bạn chỉ cần suy nghĩ về nó 1 cách biện chứng: điều gì sẽ xảy ra nếu bạn tham gia mà không có sự chuyển đổi của VID nội bộ và external VID? Câu trả lời là sẽ có conflict giữa VID nội bộ và external trong kịch bản của tenant network với sự kết hợp của VLAN và VxLAN
 
+**Giả sử ta có:**
+
+**Network 1:** VID của tenant network VLAN là 100, và chuyển đổi VID nội bộ và external VID không được thực hiện, thì local network VLAN ID cũng là 100
+
+**Network 2:** VID của tenant network VxLAN là 1000. Đối với chuyển đổi VID nội bộ và external, local network VLAN 100 cũng có thể là 100.
+
+Điều này xảy ra do khi mạng VxLAN thực hiện chuyển đổi VID internal (bên trong) và VID external (bên ngoài), nó không biết được VID của VLAN. Nó sẽ chỉ được biết sau khi VLAN thực hiện chuyển đổi VID internal và VID external. Bởi vì, chuyển đổi VID được ghi lại và thực thi bới OvS Flow table - VLAN ID được chuyển đổi với flow table.
+
+Do đó, việc chuyển đổi internal VID và external VID của VLAN type network cũng cần thiết để ngăn chặn xung đột internal VID và external VID trong trường hợp sử dụng kết hợp cả VLAN và VxLAN tenant network.
+
+Tại thời điểm này, chúng ta có thể trở lại 2 câu hỏi mở đầu:
+
+- Làm thế nào để Neutron hỗ trợ nhiều kiểu mạng(type network) ?
+- Làm cách nào để các máy ảo trên các node compute giao tiếp trong cùng 1 tenant network?
+
+# 7. Mô hình thực hiện mạng node network (NETWORK NODE NETWORK REALIZATION MODEL)
+Chức năng cốt lõi được thực hiện bởi node network là giải quyết vấn đề giao tiếp giữa VM và external network (ví dụ: internet). Xung quanh vấn đề này, chúng ta hãy hình dung làm thế nào để hiện thực hóa nó trong traditional network ?
+
+1. Để truy cập internet, tất cả các máy ảo trong node compute phải đi qua node network, đóng vai trò là gateway vào layer đầu tiên
+
+2. Node network sẽ tới gateway của DC thông qua 1 thiết bị (swicth hoặc router) trong 1 mạng vật lý được kết nói tới DC. Thiết bị này được gọi là gateway layer thứ 2. Tất nhiên, node network có thể kết nối trực tiếp với gateway DC (nếu DC gateway có thể điều khiển được). Tại thời điểm này, gateway layer thứ 2 là không cần thiết.
+
+3. DC gateway sau đó được kết nối với Internet
+
+Có thể thấy rằng những thứ mà node network phải xử lý là những thứ được xử lý bởi first-level gateway,cái mà kết nối các traffic của tất cả các node compute ở west và thiết bị gateway của physical network (layer 2) ở east. Để đạt được điều này, phần tử bắt buộc của node network là L3 Router. Cần lưu ý rằng L3 Router được đề cập ở đây không phải là vRouter (virtual router trong SDN), mà là chính node network (1 máy chủ Linux có thể được sử dụng như 1 router). Bản thân máy chủ Linux bằng phương tiện chuyển tiếp tuyến đường đê node network trở thành node nói ở trên: nhu cầu truy cập external network của first layer gateway.
+
+Từ quan điểm phân lớp, mô hình triển khai mạng của node network có thể được chia thành 4 layer:
+- **Tenant network layer:** đóng gói tất cả các node (compute, controller, network), hỗ trợ nhiều loại mạng
+
+- **Local network layer:** Dựa trên cơ chế chuyển đổi internal VID và external VID, local VLAN tag được sử dụng để phân biệt mạng mà packet thuộc về.
+
+- **Service network layer:** Cung cấp L3 Router và DHCP service
+
+- **External network layer:** Kết nối tới external network (ví dụ: Internet)
+
+Node network cung cấp L3 Router service, và cũng cung cấp dịch vụ DHCP cho từng tenant network cần thiết (do ngưởi dùng mở theo cách thủ công). Để thực hiện việc cô lập tài nguyên multi-tenant network, công nghệ Network namespace do Linux cung cấp được áp dụng. Mỗi khi một L3 Router resource object được tạo, 1 `qrouter-XXX` namespace được thêm vào; mỗi lần DHCP service được bật cho tenant network, 1 `qdhcp-XXX` namespace được thêm vào.
+
+<img src="..\images\Screenshot_138.png">
+
+Như hình, ta có thể thấy DHCP service thực sự được cung cấp bởi dnsmasq service process. 1 port DHCP (tap device) sẽ được thêm vào bảng `qdhcp-XXX` namespace. DHCP port này được kết nối tới br-int và có cùng tenant network như teanant network tương ứng. Local VLAN tag (và tenant network VID).
+
+Ngoài ra, bạn cũng có thể thấy rằng 2 bridge device là `br-int` và `br-ex` trong namespace `qrouter-XXX` được kết nối với nahu thông qu cặp **veth pair**. Hơn nữa, cổng `qr-XXX` cũng có thẻ VLAN local. Các tenant netowrk khác nhận ra sự tách biệt của cấu hình Router (routing table, ip tables) thông qua các Network namespace khác nhau. Kích hoạt iptables trong qrouter - chủ yếu là chức năng NAT và hỗ trợ chức năng liên quan đến IP của Neutron
+
+**Những người dùng khác nhau vó thể cài đặt `qrouter-xxx` và `qdhcp-xxxx` khác nhau**
+
+<img src="..\images\Screenshot_139.png">
+
+Cách traffic máy ảo được gửi ra external network:
+
+**Bước 9:** Card mạng vật lý ethX (OvS br-ethX / br-tun) nhận lưu lượng truy cập external network từ máy ảo trên node compute từ physical network, đầu tiên thực hiện chuyển đổi internal VID và external VID, và sau đó truyền nó đến OvS br thông qua thiết bị veth pair
+
+**NOTE:** Đối với mỗi tenant network, VID ở tenant network layer phải giống nhau, nhưng ID VLAN local trên các node (compute, network) khác nhau có thể không giống nhau, nhưng điều này sẽ không gây ra sự nhầm lẫn các packet dữ liệu giữa các tenant network khác nhau. Bởi vì, tất cả những điều này nằm dưới sự kiểm soát của OvS flow table, trước tiên, chúng ta hãy có ấn tượng về vấn đề này.
+
+**Bước 10:** Trên node network, OvS `br-int` được kết nối với các Network namespace khác nhau, `qrouter-XXX` nhận lưu lượng truy cập phân đoạn cross-network trong nội bộ và lưu lượng truy cập pulic network thông qua port `qr-XXX`
+
+- **Cross-network access traffic** : Sau khi port `qr-XXX` nhận được traffic, kernel TCP/IP protocol stack định tuyến lưu lượng truy cập cross-network theo routing rules trong `qrouter-XXX`, ghi lại MAC address và chuyển tiếp lưu lượng thông qua `qr-YYY` interface. OvS br-int truyền các gói dữ liệu. Nhận ra định tuyến và chuyển tiếp giữa các segment network khác nhau.
+
+- **Public network access traffic** : Sau khi port qr-XXX nhận được traffic, kernel TCP/IP protocol stack sẽ thực hiện translate network address trên traffic theo NAT rules của iptables trong `qrouter-XXX` (nguyên tắc triển khai của Floating IP), và sau đó chuyển qua `qg-XXX` interface gửi data packet tới OvS `br-ex`
+
+**Bước 11:** Cuối cùng, card mạng vật lý ethX được kết nối với second-level gateway gắn trên `br-ex` sẽ được gửi đến Internet router.
+
+Tóm lại, "Làm thế nào để máy ảo truy cập vào external network?" Vấn đề này đã được giải quyết.
+
+# 8. Mô hình thực hiện mạng của node Controller
+Mô hình triển khai mạng của node Controller khá dễ hiểu, vì node Controller không chịu trách nhiệm về data plane, vì vậy nó không triển khai các chức năng của mạng cụ thể. Điều chúng ta cần quan tâm là service process của neutron-server. Neutron không có tên rõ ràng cho neutron-api service process, nhưng neutron-server cung cấp Webserrver service. North nhận các REST API request, và South sẽ chuyển tiếp cho Neutron Agent service process trên mode thông qua giao thức RPC. Đây là mô hình triển khai mạng của Neutron trên node Controller
+
+Tới đây, chúng tôi đã giới thiệu xong mô hình triển khai mạng của Neutron trên các node compute, network và controller riêng biệt.
+
+Trước tiên, chúng ta hãy đặt OPS và Neutron sang 1 bên, và đơn giản hãy tưởng tượng cách sử dụng công tắc ảo (virtual switches) để đạt được giao tiếp máy ảo trên nhiểu máy chủ và nhu cầu về máy ảo để truy cập ra external network? Câu trả lời vô cùng đơn giản. Nếu bạn áp dụng OvS, nó sẽ đơn giản nhu tạo 1 thiết bị Bridge (ví dụ: `br-int`) trên mỗi node, ở ngoài br-ex, br-ethX/br-tun, Linux Bridge, ... rất nhiều thứ nữa.
+
+Nếu bạn sử dụng Linux Bridge, nó sẽ phức tạp hơn 1 chút
+
+<img src="..\images\Screenshot_140.png">
+
+Nhưng nếu bạn cho rằng những gì cần được triển khai là "multi-tenant multi-plane network on a cloud platform", sau đó mọi thứ sẽ trở nên khá phức tạp. Một nền tảng cloud linh hoạt và khả thi đòi hỏi quá nhiều loại mạng để hỗ trợ, và Neutron vẫn đang cố gắng làm điều đó. Trong điều kiện đó, đòi hỏi cấp thiết phải thiết kế 1 kiến trúc phần mềm với "trừu tượng và thống nhất ở lớp trên, tính tương thích không đồng nhất ở lớp dưới", và kiểu thiết kế kiến trúc này chúng ta thường gọi là kiển trúc phân lớp. Đề án thiết kế luôn phụ thuộc vào việc lựa chọn sự hỗ trợ bên dưới. Kiến trúc phân lớp của mô hình triển khai mạng Neutron được hưởng lợi từ chức năng Open vSwitch (OpenFlow switch) Flow Table
