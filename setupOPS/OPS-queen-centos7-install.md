@@ -17,18 +17,18 @@ bash
 
 Thiết lập IP
 ```
-nmcli con modify eth0 ipv4.addresses 10.10.31.166/24
-nmcli con modify eth0 ipv4.gateway 10.10.31.1
+nmcli con modify eth0 ipv4.addresses 10.10.34.162/24
+nmcli con modify eth0 ipv4.gateway 10.10.34.1
 nmcli con modify eth0 ipv4.dns 8.8.8.8
 nmcli con modify eth0 ipv4.method manual
 nmcli con modify eth0 connection.autoconnect yes
 
-nmcli con modify eth1 ipv4.addresses 10.10.32.166/24
+nmcli con modify eth1 ipv4.addresses 10.10.31.162/24
 nmcli con modify eth1 ipv4.method manual
 nmcli con modify eth1 connection.autoconnect yes
 
 
-nmcli con modify eth2 ipv4.addresses 10.10.35.166/24
+nmcli con modify eth2 ipv4.addresses 10.10.35.162/24
 nmcli con modify eth2 ipv4.method manual
 nmcli con modify eth2 connection.autoconnect yes
 ```
@@ -54,11 +54,9 @@ gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1' >> /etc/yum.repos.d/MariaDB.repo
 
 yum install -y epel-release
-yum update -y
 yum install -y centos-release-openstack-queens \
 open-vm-tools python2-PyMySQL vim telnet wget curl 
 yum install -y python-openstackclient openstack-selinux 
-yum upgrade -y
 ```
 
 Reboot server
@@ -77,18 +75,18 @@ bash
 
 Thiết lập IP
 ```
-nmcli con modify eth0 ipv4.addresses 10.10.31.167/24
-nmcli con modify eth0 ipv4.gateway 10.10.31.1
+nmcli con modify eth0 ipv4.addresses 10.10.34.163/24
+nmcli con modify eth0 ipv4.gateway 10.10.34.1
 nmcli con modify eth0 ipv4.dns 8.8.8.8
 nmcli con modify eth0 ipv4.method manual
 nmcli con modify eth0 connection.autoconnect yes
 
-nmcli con modify eth1 ipv4.addresses 10.10.32.167/24
+nmcli con modify eth1 ipv4.addresses 10.10.31.163/24
 nmcli con modify eth1 ipv4.method manual
 nmcli con modify eth1 connection.autoconnect yes
 
 
-nmcli con modify eth2 ipv4.addresses 10.10.35.167/24
+nmcli con modify eth2 ipv4.addresses 10.10.35.163/24
 nmcli con modify eth2 ipv4.method manual
 nmcli con modify eth2 connection.autoconnect yes
 ```
@@ -114,11 +112,9 @@ gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1' >> /etc/yum.repos.d/MariaDB.repo
 
 yum install -y epel-release
-yum update -y
 yum install -y centos-release-openstack-queens \
 open-vm-tools python2-PyMySQL vim telnet wget curl 
 yum install -y python-openstackclient openstack-selinux 
-yum upgrade -y
 ```
 
 Reboot server
@@ -150,7 +146,7 @@ timedatectl set-timezone Asia/Ho_Chi_Minh
 
 Sửa file cấu hình:
 ```
-sed -i s'/0.centos.pool.ntp.org/10.10.35.150/'g /etc/chrony.conf
+sed -i s'/0.centos.pool.ntp.org/10.10.34.130/'g /etc/chrony.conf
 
 sed -i s'/server 1.centos.pool.ntp.org iburst/#server 1.centos.pool.ntp.org iburst/'g /etc/chrony.conf
 sed -i s'/server 2.centos.pool.ntp.org iburst/#server 2.centos.pool.ntp.org iburst/'g /etc/chrony.conf
@@ -159,7 +155,7 @@ sed -i s'/server 3.centos.pool.ntp.org iburst/#server 3.centos.pool.ntp.org ibur
 
 Để cho phép các node compute kết nối với chrony trên node controller, ta sẽ sửa file cấu hình cho subnet chung của các node:
 ```
-sed -i s'|#allow 192.168.0.0/16|allow 10.10.31.0/24|'g /etc/chrony.conf
+sed -i s'|#allow 192.168.0.0/16|allow 10.10.34.0/24|'g /etc/chrony.conf
 ```
 
 Khởi động lại chrony sau khi sửa file cấu hình
@@ -199,7 +195,7 @@ Các node compute sẽ đồng bộ thời gian từ node `controller1`.
 
 Sửa file cấu hình như sau:
 ```
-sed -i 's/server 0.centos.pool.ntp.org iburst/server controller1 iburst/g' /etc/chrony.conf
+sed -i 's/server 0.centos.pool.ntp.org iburst/server 10.10.34.162 iburst/g' /etc/chrony.conf
 
 sed -i s'/server 1.centos.pool.ntp.org iburst/#server 1.centos.pool.ntp.org iburst/'g /etc/chrony.conf
 sed -i s'/server 2.centos.pool.ntp.org iburst/#server 2.centos.pool.ntp.org iburst/'g /etc/chrony.conf
@@ -234,7 +230,7 @@ Thêm config của mysql cho openstack
 ```
 cat << EOF >> /etc/my.cnf.d/openstack.cnf 
 [mysqld]
-bind-address = 10.10.31.166
+bind-address = 10.10.34.162
         
 default-storage-engine = innodb
 innodb_file_per_table = on
@@ -302,7 +298,7 @@ rabbitmqadmin list users
 ```
 Đăng nhập vào Dashboard quản trị của Rabbit-mq
 ```
-http://10.10.31.166:15672
+http://10.10.34.162:15672
 user: openstack
 password: Welcome123
 ```
@@ -317,7 +313,7 @@ yum install memcached python-memcached -y
 
 Cấu hình cho memcached
 ```
-sed -i "s/-l 127.0.0.1,::1/-l 10.10.31.166/g" /etc/sysconfig/memcached
+sed -i "s/-l 127.0.0.1,::1/-l 10.10.34.162/g" /etc/sysconfig/memcached
 ```
 
 Enable và start memcached
@@ -344,7 +340,6 @@ GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'Welc
 
 GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'Welcome123';
 
-GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'10.10.31.166' IDENTIFIED BY 'Welcome123';
 
 FLUSH PRIVILEGES;
 
@@ -372,7 +367,7 @@ cat << EOF >> /etc/keystone/keystone.conf
 [cors]
 [credential]
 [database]
-connection = mysql+pymysql://keystone:Welcome123@10.10.31.166/keystone
+connection = mysql+pymysql://keystone:Welcome123@10.10.34.162/keystone
 [domain_config]
 [endpoint_filter]
 [endpoint_policy]
@@ -434,15 +429,15 @@ keystone-manage credential_setup --keystone-user keystone --keystone-group keyst
 Thiết lập boostrap cho Keystone
 ```
 keystone-manage bootstrap --bootstrap-password Welcome123 \
---bootstrap-admin-url http://10.10.31.166:5000/v3/ \
---bootstrap-internal-url http://10.10.31.166:5000/v3/ \
---bootstrap-public-url http://10.10.31.166:5000/v3/ \
+--bootstrap-admin-url http://10.10.34.162:5000/v3/ \
+--bootstrap-internal-url http://10.10.34.162:5000/v3/ \
+--bootstrap-public-url http://10.10.34.162:5000/v3/ \
 --bootstrap-region-id RegionOne
 ```
 
 Cấu hình apache cho keystone
 ```
-sed -i 's|#ServerName www.example.com:80|ServerName 10.10.31.166|g' /etc/httpd/conf/httpd.conf 
+sed -i 's|#ServerName www.example.com:80|ServerName 10.10.34.162|g' /etc/httpd/conf/httpd.conf 
 ```
 
 Create symlink cho keystone api
@@ -467,7 +462,7 @@ export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
 export OS_USERNAME=admin
 export OS_PASSWORD=Welcome123
-export OS_AUTH_URL=http://10.10.31.166:5000/v3
+export OS_AUTH_URL=http://10.10.34.162:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 export PS1='[\u@\h \W(admin-openrc)]\$ '
@@ -483,7 +478,7 @@ export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=demo
 export OS_USERNAME=demo
 export OS_PASSWORD=Welcome123
-export OS_AUTH_URL=http://10.10.31.166:5000/v3
+export OS_AUTH_URL=http://10.10.34.162:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 export PS1='[\u@\h \W(demo-openrc)]\$ '
@@ -556,8 +551,6 @@ GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY 'Welcome1
 
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY 'Welcome123';
 
-GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'10.10.31.166' IDENTIFIED BY 'Welcome123';
-
 FLUSH PRIVILEGES;
 
 exit
@@ -590,9 +583,9 @@ openstack service create --name glance --description "OpenStack Image" image
 
 Tạo các enpoint cho glane
 ```
-openstack endpoint create --region RegionOne image public http://10.10.31.166:9292
-openstack endpoint create --region RegionOne image internal http://10.10.31.166:9292
-openstack endpoint create --region RegionOne image admin http://10.10.31.166:9292
+openstack endpoint create --region RegionOne image public http://10.10.34.162:9292
+openstack endpoint create --region RegionOne image internal http://10.10.34.162:9292
+openstack endpoint create --region RegionOne image admin http://10.10.34.162:9292
 ```
 
 Cài đặt package
@@ -609,20 +602,20 @@ Cấu hình glance-api
 ```
 cat << EOF >> /etc/glance/glance-api.conf
 [DEFAULT]
-bind_host = 10.10.31.166
-registry_host = 10.10.31.166
+bind_host = 10.10.34.162
+registry_host = 10.10.34.162
 [cors]
 [database]
-connection = mysql+pymysql://glance:Welcome123@10.10.31.166/glance
+connection = mysql+pymysql://glance:Welcome123@10.10.34.162/glance
 [glance_store]
 stores = file,http
 default_store = file
 filesystem_store_datadir = /var/lib/glance/images/
 [image_format]
 [keystone_authtoken]
-auth_uri = http://10.10.31.166:5000
-auth_url = http://10.10.31.166:5000
-memcached_servers = 10.10.31.166:11211
+auth_uri = http://10.10.34.162:5000
+auth_url = http://10.10.34.162:5000
+memcached_servers = 10.10.34.162:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
@@ -667,13 +660,13 @@ Cấu hình glance-registry
 ```
 cat << EOF >> /etc/glance/glance-registry.conf
 [DEFAULT]
-bind_host = 10.10.31.166
+bind_host = 10.10.34.162
 [database]
-connection = mysql+pymysql://glance:Welcome123@10.10.31.166/glance
+connection = mysql+pymysql://glance:Welcome123@10.10.34.162/glance
 [keystone_authtoken]
-auth_uri = http://10.10.31.166:5000
-auth_url = http://10.10.31.166:5000
-memcached_servers = 10.10.31.166:11211
+auth_uri = http://10.10.34.162:5000
+auth_url = http://10.10.34.162:5000
+memcached_servers = 10.10.34.162
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
