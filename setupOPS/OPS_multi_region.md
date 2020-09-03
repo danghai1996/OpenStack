@@ -48,3 +48,17 @@ Các tùy chọn sẽ có ưu nhược điểm khác nhau.
 |-|-|-|-|
 |Ưu điểm||||
 |Nhược điểm||||
+
+# Triển khai Multi Region trong Openstack Queens
+### Chuẩn bị:
+- Triển khai 2 cụm OPS theo [docs cài đặt manual](./OPS-queen-centos7-install.md).
+
+## Mô hình
+### Mô hình tích hợp
+
+
+### Mô hình triển khai
+**Mô hình:**
+
+
+**IP Planning:**
