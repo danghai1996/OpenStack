@@ -63,7 +63,8 @@ net.ipv4.tcp_keepalive_intvl = 3
 net.ipv4.tcp_keepalive_probes = 6
 net.ipv4.ip_forward = 1
 net.ipv4.conf.all.rp_filter = 0
-net.ip
+net.ipv4.conf.default.rp_filter = 0
+EOF
 ```
 Kiểm tra mode sysctl
 ```
