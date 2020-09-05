@@ -86,16 +86,6 @@ gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1' >> /etc/yum.repos.d/MariaDB.repo
 ```
 
-Tạo ssh key
-```
-ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -P ""
-
-ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub root@controller1
-ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub root@compute1
-
-scp /root/.ssh/id_rsa root@compute1:/root/.ssh/
-```
-
 Cài đặt các gói cần thiết
 ```
 yum -y install centos-release-openstack-queens
@@ -183,6 +173,18 @@ yum -y install python-openstackclient openstack-selinux python2-PyMySQL
 Reboot server
 ```
 reboot
+```
+
+### Quay lại node Controller
+> Thực hiện trên node Controller
+Tạo ssh key
+```
+ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -P ""
+
+ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub root@controller1
+ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub root@compute1
+
+scp /root/.ssh/id_rsa root@compute1:/root/.ssh/
 ```
 
 ## 2. Cài đặt NTP
