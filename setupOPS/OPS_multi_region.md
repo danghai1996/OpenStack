@@ -55,10 +55,18 @@ Các tùy chọn sẽ có ưu nhược điểm khác nhau.
 
 ## Mô hình
 ### Mô hình tích hợp
-
-
 ### Mô hình triển khai
 **Mô hình:**
 
+<img src="..\images\multi-region-queens.png">
 
 **IP Planning:**
+
+<img src="..\images\multi-region-ip-planing-queen.png">
+
+# Triển khai
+**Lưu ý:**
+
+- Theo docs manual, Region mặc định sẽ là RegionOne, vì vậy chúng ta sẽ không phải cấu hình 2 node Controller 10.10.34.162 và compute 10.10.34.163
+- Trong bài, mình sẽ chỉ cấu hình 2 node controller 10.10.34.169 và compute 10.10.34.170 sang thành RegionTwo, chia sẻ Keystone, Horizon với RegionOne
+- Keystone chia sẻ giữa 2 cụm Openstack sẽ nằm trên Controller (của RegionOne) 10.10.34.162 
