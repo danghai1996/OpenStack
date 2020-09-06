@@ -531,6 +531,7 @@ openstack --os-auth-url http://10.10.34.162:35357/v3 \
 Tạo file xác thực
 ```
 cat << EOF >> admin-openrc
+export OS_REGION_NAME=RegionOne
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
@@ -543,6 +544,7 @@ EOF
 
 
 cat << EOF >> demo-openrc
+export OS_REGION_NAME=RegionOne
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=demo
@@ -598,7 +600,7 @@ yum install -y openstack-glance
 ```
 
 Cấu hình glance api
-```
+```conf
 cp /etc/glance/glance-api.conf /etc/glance/glance-api.conf.org 
 rm -rf /etc/glance/glance-api.conf
 
@@ -624,6 +626,7 @@ user_domain_name = Default
 project_name = service
 username = glance
 password = Welcome123
+region_name = RegionOne
 [matchmaker_redis]
 [oslo_concurrency]
 [oslo_messaging_amqp]
@@ -650,7 +653,7 @@ EOF
 ```
 
 Cấu hình glance registry
-```
+```conf
 cp /etc/glance/glance-registry.conf /etc/glance/glance-registry.conf.org
 rm -rf /etc/glance/glance-registry.conf
 
@@ -669,6 +672,7 @@ user_domain_name = Default
 project_name = service
 username = glance
 password = Welcome123
+region_name = RegionOne
 [matchmaker_redis]
 [oslo_messaging_amqp]
 [oslo_messaging_kafka]
@@ -798,6 +802,7 @@ enabled = true
 memcache_servers = 10.10.34.162:11211
 [cells]
 [cinder]
+os_region_name = RegionOne
 [compute]
 [conductor]
 [console]
@@ -826,6 +831,7 @@ user_domain_name = default
 project_name = service
 username = nova
 password = Welcome123
+region_name = RegionOne
 [libvirt]
 [matchmaker_redis]
 [metrics]
@@ -980,6 +986,7 @@ auth_strategy = keystone
 [cache]
 [cells]
 [cinder]
+os_region_name = RegionOne
 [compute]
 [conductor]
 [console]
@@ -1007,6 +1014,7 @@ user_domain_name = default
 project_name = service
 username = nova
 password = Welcome123
+region_name = RegionOne
 [libvirt]
 virt_type = kvm
 [matchmaker_redis]
@@ -1156,6 +1164,7 @@ user_domain_name = default
 project_name = service
 username = neutron
 password = Welcome123
+region_name = RegionOne
 [matchmaker_redis]
 [nova]
 auth_url = http://10.10.34.162:35357
@@ -1166,6 +1175,7 @@ region_name = RegionOne
 project_name = service
 username = nova
 password = Welcome123
+region_name = RegionOne
 [oslo_concurrency]
 lock_path = /var/lib/neutron/tmp
 [oslo_messaging_amqp]
@@ -1328,6 +1338,7 @@ user_domain_name = default
 project_name = service
 username = neutron
 password = Welcome123
+region_name = RegionOne
 [matchmaker_redis]
 [nova]
 [oslo_concurrency]
@@ -1592,6 +1603,7 @@ transport_url = rabbit://openstack:Welcome123@10.10.34.162:5672
 auth_strategy = keystone
 osapi_volume_listen = 10.10.34.162 
 enabled_backends = lvm
+glance_api_servers = http://10.10.34.162:9292
 [backend]
 [backend_defaults]
 [barbican]
@@ -1614,6 +1626,7 @@ user_domain_id = default
 project_name = service
 username = cinder
 password = Welcome123
+region_name = RegionOne
 [matchmaker_redis]
 [nova]
 [oslo_concurrency]
