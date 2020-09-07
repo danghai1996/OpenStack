@@ -614,7 +614,7 @@ Kiểm tra service trên node Controller của RegionOne (34.162)
 Ta thực hiện chỉnh sửa file cấu hình `/etc/cinder/cinder.conf`
 
 Module `[DEFAULT]`
-- Sửa `glance_api_servers = http://10.10.34.162:9292` thành -> `glance_api_servers = http://10.10.34.169:9292`
+- Chắc chắn rằng glance api server là địa chỉ của node Controller của RegionTwo `glance_api_servers = http://10.10.34.169:9292`
 
 Module `[keystone_authtoken]`
 - Sửa `auth_uri = http://10.10.34.169:5000` thành -> `auth_uri = http://10.10.34.162:5000`
