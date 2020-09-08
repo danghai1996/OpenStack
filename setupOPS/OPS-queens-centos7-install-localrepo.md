@@ -3,7 +3,7 @@
 ## Mục tiêu:
 Cài đặt được OpenStack mà không cần sử dụng đến Internet
 
-
+```
 # Thực hiện:
 ## 
 ```
@@ -33,13 +33,8 @@ rpm -ivh *.rpm
 - centos-release-qemu-ev-1.0-4.el7.centos.noarch.rpm
 - centos-release-storage-common-2-2.el7.centos.noarch.rpm
 - centos-release-virt-common-1-1.el7.centos.noarch.rpm
-
-
-
-
-
-
 https://buildlogs.centos.org/centos/7/extras/x86_64/centos-release-qemu-ev-1.0-3.el7.centos.noarch.rpm
+```
 
 ## Các bước kiểm tra gói
 1. Lấy thông tin các gói cài đặt để dựng OPS:
