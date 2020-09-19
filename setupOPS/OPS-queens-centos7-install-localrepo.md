@@ -44,7 +44,7 @@ https://buildlogs.centos.org/centos/7/extras/x86_64/centos-release-qemu-ev-1.0-3
     ```
     Ví dụ:
     ```
-    yumdownloader --destdir=/root/backups-ops-queens/centos-release-openstack-queens/ --resolve centos-release-openstack-queens
+    yumdownloader --destdir=/root/backup-ops/openstack-keystone/ --resolve openstack-keystone
     ```
 
 3. Lấy danh sách các file `.rpm`
