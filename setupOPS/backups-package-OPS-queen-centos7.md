@@ -169,6 +169,11 @@ yum localinstall -y /root/backup-ctl/13-cinder/*.rpm
 > ### Vậy là ta đã backups xong các gói cài đặt trên node Controller.
 
 # II. Trên node cài đặt Compute
+Chỉnh sửa `/etc/yum.repos.d/CentOS-QEMU-EV.repo`
+```
+sed -i 's|baseurl=http:\/\/mirror.centos.org\/$contentdir\/$releasever\/virt\/$basearch\/kvm-common\/|baseurl=http:\/\/mirror.centos.org\/centos\/7\/virt\/x86_64\/kvm-common\/|g' /etc/yum.repos.d/CentOS-QEMU-EV.repo
+```
+
 ## 1. Tạo thư mục lưu các gói cài đặt:
 ```
 mkdir /root/backup-com
