@@ -1175,7 +1175,6 @@ region_name = RegionOne
 project_name = service
 username = nova
 password = Welcome123
-region_name = RegionOne
 [oslo_concurrency]
 lock_path = /var/lib/neutron/tmp
 [oslo_messaging_amqp]
