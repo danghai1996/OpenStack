@@ -1413,331 +1413,83 @@ systemctl start neutron-dhcp-agent.service
 systemctl restart openstack-nova-compute.service
 ```
 
-### 2.12. Cài đặt horizon
+### 2.12. Cài đặt Horizon
 > Thực hiện trên node Controller
 
-Cài đặt gói dashboard cho OpenStack
-
+Tải packages
 ```
-yum install -y openstack-dashboard
-```
-
-Sao lưu file `/etc/openstack-dashboard/local_settings`
-
-```
-cp /etc/openstack-dashboard/local_settings /etc/openstack-dashboard/local_settings.bak
+yum install openstack-dashboard -y
 ```
 
-Có 2 cách xử lý phần này
-
-**Cách 1:** Tải file mẫu
-
+Tạo file redirect
 ```
-wget -O /etc/openstack-dashboard/local_settings https://gist.githubusercontent.com/congto/5b5b73a64b90f403966ae70a5394d650/raw/8321ebbd73de47d19f836e1383224cf9c71f291c/local_settings
-
-chown root:apache /etc/openstack-dashboard/local_settings
+filehtml=/var/www/html/index.html
+touch $filehtml
+cat << EOF >> $filehtml
+<html>
+<head>
+<META HTTP-EQUIV="Refresh" Content="0.5; URL=http://10.10.31.166/dashboard">
+</head>
+<body>
+<center> <h1>Redirecting to OpenStack Dashboard</h1> </center>
+</body>
+</html>
+EOF
 ```
-Sau khi tải về, sửa IP về IP của node `controller`: `10.10.31.161`
 
-**Cách 2:** Sửa các dòng ở file `/etc/openstack-dashboard/local_settings` để có nội dung giống như bên dưới
-
+Backup cấu hình
 ```
-import os
-from django.utils.translation import ugettext_lazy as _
-from openstack_dashboard.settings import HORIZON_CONFIG
-DEBUG = False
-ALLOWED_HOSTS = ['*']
-LOCAL_PATH = '/tmp'
-SECRET_KEY='815188a7493add38560f'
+cp /etc/openstack-dashboard/local_settings /etc/openstack-dashboard/local_settings.org
+```
+
+Thay đổi cấu hình trong file `/etc/openstack-dashboard/local_settings`
+```
+ALLOWED_HOSTS = ['*',]
+OPENSTACK_API_VERSIONS = {
+"identity": 3,
+"image": 2,
+"volume": 2,
+}
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
+```
+
+Lưu ý thêm `SESSION_ENGINE` vào trên dòng CACHE như bên dưới
+```
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 CACHES = {
     'default': {
-         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-         'LOCATION': '10.10.31.166:11211',
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': ['10.10.31.166:11211',]
     }
 }
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 OPENSTACK_HOST = "10.10.31.166"
-OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
-OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "Default"
+OPENSTACK_KEYSTONE_URL = "http://10.10.31.166:5000/v3"
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "user"
-OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
-OPENSTACK_API_VERSIONS = {
-    "identity": 3,
-    "image": 2,
-    "volume": 3,
-}
+```
 
+Lưu ý: Nếu chỉ sử dụng provider, chỉnh sửa các thông số sau
+```
 OPENSTACK_NEUTRON_NETWORK = {
-    'enable_auto_allocated_network': False,
+    'enable_router': False,
+    'enable_quotas': False,
+    'enable_ipv6': False,
     'enable_distributed_router': False,
-    'enable_fip_topology_check': True,
     'enable_ha_router': False,
-    'enable_ipv6': True,
-    # TODO(amotoki): Drop OPENSTACK_NEUTRON_NETWORK completely from here.
-    # enable_quotas has the different default value here.
-    'enable_quotas': True,
-    'enable_rbac_policy': True,
-    'enable_router': True,
-    'default_dns_nameservers': [],
-    'supported_provider_types': ['*'],
-    'segmentation_id_range': {},
-    'extra_provider_types': {},
-    'supported_vnic_types': ['*'],
-    'physical_networks': [],
+    'enable_fip_topology_check': False,
 }
+
 TIME_ZONE = "Asia/Ho_Chi_Minh"
-LOGGING = {
-    'version': 1,
-    # When set to True this will disable all logging except
-    # for loggers specified in this configuration dictionary. Note that
-    # if nothing is specified here and disable_existing_loggers is True,
-    # django.db.backends will still log unless it is disabled explicitly.
-    'disable_existing_loggers': False,
-    # If apache2 mod_wsgi is used to deploy OpenStack dashboard
-    # timestamp is output by mod_wsgi. If WSGI framework you use does not
-    # output timestamp for logging, add %(asctime)s in the following
-    # format definitions.
-    'formatters': {
-        'console': {
-            'format': '%(levelname)s %(name)s %(message)s'
-        },
-        'operation': {
-            # The format of "%(message)s" is defined by
-            # OPERATION_LOG_OPTIONS['format']
-            'format': '%(message)s'
-        },
-    },
-    'handlers': {
-        'null': {
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
-        },
-        'console': {
-            # Set the level to "DEBUG" for verbose output logging.
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'console',
-        },
-        'operation': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'operation',
-        },
-    },
-    'loggers': {
-        'horizon': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'horizon.operation_log': {
-            'handlers': ['operation'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'openstack_dashboard': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'novaclient': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'cinderclient': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'keystoneauth': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'keystoneclient': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'glanceclient': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'neutronclient': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'swiftclient': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'oslo_policy': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'openstack_auth': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        # Logging from django.db.backends is VERY verbose, send to null
-        # by default.
-        'django.db.backends': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-        'requests': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-        'urllib3': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-        'chardet.charsetprober': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-        'iso8601': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-        'scss': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-    },
-}
-SECURITY_GROUP_RULES = {
-    'all_tcp': {
-        'name': _('All TCP'),
-        'ip_protocol': 'tcp',
-        'from_port': '1',
-        'to_port': '65535',
-    },
-    'all_udp': {
-        'name': _('All UDP'),
-        'ip_protocol': 'udp',
-        'from_port': '1',
-        'to_port': '65535',
-    },
-    'all_icmp': {
-        'name': _('All ICMP'),
-        'ip_protocol': 'icmp',
-        'from_port': '-1',
-        'to_port': '-1',
-    },
-    'ssh': {
-        'name': 'SSH',
-        'ip_protocol': 'tcp',
-        'from_port': '22',
-        'to_port': '22',
-    },
-    'smtp': {
-        'name': 'SMTP',
-        'ip_protocol': 'tcp',
-        'from_port': '25',
-        'to_port': '25',
-    },
-    'dns': {
-        'name': 'DNS',
-        'ip_protocol': 'tcp',
-        'from_port': '53',
-        'to_port': '53',
-    },
-    'http': {
-        'name': 'HTTP',
-        'ip_protocol': 'tcp',
-        'from_port': '80',
-        'to_port': '80',
-    },
-    'pop3': {
-        'name': 'POP3',
-        'ip_protocol': 'tcp',
-        'from_port': '110',
-        'to_port': '110',
-    },
-    'imap': {
-        'name': 'IMAP',
-        'ip_protocol': 'tcp',
-        'from_port': '143',
-        'to_port': '143',
-    },
-    'ldap': {
-        'name': 'LDAP',
-        'ip_protocol': 'tcp',
-        'from_port': '389',
-        'to_port': '389',
-    },
-    'https': {
-        'name': 'HTTPS',
-        'ip_protocol': 'tcp',
-        'from_port': '443',
-        'to_port': '443',
-    },
-    'smtps': {
-        'name': 'SMTPS',
-        'ip_protocol': 'tcp',
-        'from_port': '465',
-        'to_port': '465',
-    },
-    'imaps': {
-        'name': 'IMAPS',
-        'ip_protocol': 'tcp',
-        'from_port': '993',
-        'to_port': '993',
-    },
-    'pop3s': {
-        'name': 'POP3S',
-        'ip_protocol': 'tcp',
-        'from_port': '995',
-        'to_port': '995',
-    },
-    'ms_sql': {
-        'name': 'MS SQL',
-        'ip_protocol': 'tcp',
-        'from_port': '1433',
-        'to_port': '1433',
-    },
-    'mysql': {
-        'name': 'MYSQL',
-        'ip_protocol': 'tcp',
-        'from_port': '3306',
-        'to_port': '3306',
-    },
-    'rdp': {
-        'name': 'RDP',
-        'ip_protocol': 'tcp',
-        'from_port': '3389',
-        'to_port': '3389',
-    },
-}
 ```
 
-Thực hiện các lệnh sau
+Thêm vào file `/etc/httpd/conf.d/openstack-dashboard.conf`
 ```
-cd /usr/share/openstack-dashboard
+echo "WSGIApplicationGroup %{GLOBAL}" >> /etc/httpd/conf.d/openstack-dashboard.conf
+```
 
-python manage.py make_web_conf --apache > /etc/httpd/conf.d/openstack-dashboard.conf
-
-ln -s /etc/openstack-dashboard /usr/share/openstack-dashboard/openstack_dashboard/conf
-
-systemctl enable httpd.service
-
-systemctl restart httpd.service
- 
-systemctl restart memcached.service
+Restart lại httpd
+```
+systemctl restart httpd.service memcached.service
 ```
 
 Truy cập vào trang chủ với địa chỉ `http://10.10.31.166` với user/pass: `admin`/`Welcome123`
