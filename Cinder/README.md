@@ -1,4 +1,4 @@
-# Mục lục Cinder
+# Cinder
 
 [1. Tổng quan về Cinder](./01-cinder_overview.md)
 

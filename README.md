@@ -1,33 +1,37 @@
-# OpenStack
+# Ghi chép về OpenStack
 
-Ghi chép tìm hiểu OpenStack
+Ghi chép tìm hiểu về OpenStack
 
-## Tìm hiểu chung
-[1. Tổng quan về Cloud Computing](./general/01b-CloudComputing.md)
+# Tìm hiểu chung
+### [1. Tổng quan về Cloud Computing](./general/01b-CloudComputing.md)
 
-[2. Openstack là gì?](./general/02-OpenStack.md)
+### [2. Openstack là gì?](./general/02-OpenStack.md)
 
-[3. Các thành phần và cấu trúc của OPS](./general/03-CauTrucOPS.md)
+### [3. Các thành phần và cấu trúc của OPS](./general/03-CauTrucOPS.md)
 
-[4. Hướng dẫn sử dụng Dashboard](./general/HDSD_Dashboard.md)
+# Hướng dẫn cài đặt OPS
+### [1. Hướng dẫn cài đặt OPS Train](./setupOPS/OPS-train-centos7-install.md)
 
-## Hướng dẫn cài đặt OPS
-[1. Hướng dẫn cài đặt OPS Train](./setupOPS/OPS-train-centos7-install.md)
+### [2. Hướng dẫn cài đặt OPS Queens](./setupOPS/OPS-queen-centos7-install.md)
 
+### [3. Hướng dẫn cài đặt OPS Multi region bản Queens](./setupOPS/OPS_multi_region.md)
 
-## Project Keystone
-[1. Tổng quan về Keystone](./Keystone/01-TongQuanKeystone.md)
+### [4. Backups các gói cài đặt OPS bản Queens](./setupOPS/backups-package-OPS-queen-centos7.md)
 
-[2. Các loại Token trong Keystone](./Keystone/02-Token.md)
+### [5. Cài đặt OPS Queens offline](./setupOPS/OPS-queens-centos7-offline.md)
 
-[3. Tìm hiểu policy](./Keystone/03-Policy.md)
+### [6. Cài đặt OPS Queens HA có CEPH](./setup-ops-ha-queens/README.md)
 
-[4. Luồng làm việc cơ bản của Keystone](./Keystone/04-workflow.md)
+### [7. Hướng dẫn sử dụng Dashboard](./general/HDSD_Dashboard.md)
 
-[5. Các lệnh thường dùng trong Keystone](./Keystone/05-KeystoneCommand.md)
+# Các project trong Openstack
+### [1. Keystone](./Keystone/README.md)
+### [2. Glance](./Glance/README.md)
+### [3. Nova](./Nova/README.md)
+### [4. Neutron](./Neutron/README.md)
+### [5. Cinder](./Cinder/README.md)
 
-[6. File cấu hình trong Keystone](./Keystone/06-File_config.md)
-
-[7. File log của Keystone](./Keystone/07-file_log.md)
-
-[8. Khái niệm Endpoint và Catalog](./Keystone/08-EndpointAndCatalog.md)
+# Ghi chép về Cloud-init
+### [1. Giới thiệu là cloud-init](./Cloud-init/01-clout-init-intro.md)
+### [2. Các module trond cloud-init](./Cloud-init/02-module.md)
+### [3. Module `write_files`](./Cloud-init/03-module_write_file.md)

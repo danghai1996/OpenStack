@@ -1,5 +1,3 @@
-# Mục lục
-
 # Project Nova
 
 [1. Tổng quan về project Nova](./01-tongquan_nova.md)

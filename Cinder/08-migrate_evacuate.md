@@ -1,4 +1,4 @@
-# Migrate vaf Evacuate
+# Migrate và Evacuate
 
 ## Migrate
 Migrate là kỹ thuật chuyển máy ảo từ node compute này sang node compute khác.

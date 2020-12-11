@@ -1,6 +1,5 @@
-# Mục lục
+# Project Keystone
 
-## Project Keystone
 [1. Tổng quan về Keystone](./01-TongQuanKeystone.md)
 
 [2. Các loại Token trong Keystone](./02-Token.md)

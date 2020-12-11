@@ -1,4 +1,4 @@
-# Tìm hiểu về project Glance
+# Glance
 
 [1. Tổng quan về Glance](./01-TongQuanVeGlance.md)
 
