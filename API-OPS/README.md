@@ -1,0 +1,1 @@
+# Ghi chép về API trong Openstack
