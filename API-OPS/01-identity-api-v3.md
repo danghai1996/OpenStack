@@ -509,3 +509,8 @@ Tham số: `X-Auth-Token`: Token hiện tại
 Kết quả:
 
 <img src="..\images\api-ops\Screenshot_29.png">
+
+
+# Tham khảo
+- https://docs.openstack.org/api-ref/identity/v3/
+- https://github.com/lacoski/OpenStack-Note/blob/master/docs/ops-api/ops-api.md
