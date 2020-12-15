@@ -95,3 +95,12 @@ Header:
 Body:
 - Đường dẫn của image
 
+<img src="..\images\api-ops\Screenshot_38.png">
+
+<img src="..\images\api-ops\Screenshot_39.png">
+
+<img src="..\images\api-ops\Screenshot_40.png">
+
+# Tham khảo
+- https://github.com/lacoski/OpenStack-Note/blob/master/docs/ops-api/ops-api.md
+- https://docs.openstack.org/api-ref/image/v2/index.html
