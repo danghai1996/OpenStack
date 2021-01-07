@@ -37,6 +37,11 @@ curl -Lso- https://raw.githubusercontent.com/nhanhoadocs/scripts/master/Utilitie
 init 6
 ```
 
+Thêm IP đường CEPH-COM vào file hosts:
+```
+echo "10.10.33.165 cephaio" >> /etc/hosts
+```
+
 Cấu hình chrony:
 ```
 Lấy time từ server : 10.10.34.130
