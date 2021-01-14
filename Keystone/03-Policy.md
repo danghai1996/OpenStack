@@ -29,8 +29,8 @@
     "identity:change_password": "rule:admin_or_owner"
     ```
 
-
-**Bản Train:** Mặc định file policy
+# File `policy.yaml`
+Hiện tại các phiên bản như Queens, Train thì đổi sang sử dụng định dạng yaml
 
 Để gen các policy mặc định, ta thực hiện như sau:
 > ## Check lại -> gen ra dạng yaml chứ không phải json
@@ -41,6 +41,7 @@ oslopolicy-policy-generator --namespace nova --output-file /etc/nova/policy.yaml
 oslopolicy-policy-generator --namespace neutron --output-file /etc/neutron/policy.yaml
 oslopolicy-policy-generator --namespace cinder --output-file /etc/cinder/policy.yaml
 ```
+
 
 Và để sử dụng file `.yaml` làm policy ta chỉnh trong file cấu hình keystone:
 ```
@@ -76,8 +77,24 @@ systemctl restart httpd
     +----------------------------------+-----------+
     ```
 
-**Tuy nhiên:**
-- user admin lại không còn list được user
-- Dashboard truy cập bị lỗi. Khoong login được:
-    
-    <img src="..\images\Screenshot_65.png">
+Tuy nhiên, user `admin` không list được user nữa:
+```
+[root@controller1 ~]# source admin-openrc
+[root@controller1 ~]# openstack user list
+You are not authorized to perform the requested action: identity:list_users. (HTTP 403) (Request-ID: req-41b0e2d6-6913-47ef-a10d-befc57bad070)
+```
+
+Việc thêm 1 policy vào file policy.yaml sẽ thực hiện việc cập nhật lại toàn bộ policy với action đó. Như ví dụ trên chính là action list user.
+
+Để user `admin` list được user thì chỉnh sửa lại action:
+```
+"identity:list_users" : "role:vpc or role:admin"
+```
+
+Tham khảo cách cấu hình policy tại [đây](https://docs.openstack.org/cinder/latest/configuration/block-storage/policy-config-HOWTO.html).
+
+
+# Xem thêm
+- https://docs.openstack.org/keystone/queens/configuration/
+- https://docs.openstack.org/keystone/queens/configuration/policy.html
+- https://docs.openstack.org/keystone/queens/configuration/samples/policy-yaml.html
