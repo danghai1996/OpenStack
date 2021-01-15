@@ -5,7 +5,7 @@
 
 - OpenStack Compute chính là phần chính quan trọng nhất trong kiến trúc hệ thống Infrastructure-as-a-Service (IaaS). Phần lớn các modules của Nova được viết bằng Python.
 
-- OpenStack Compute giao tiếp với các service khách của OPS:
+- OpenStack Compute giao tiếp với các service khác của OPS:
     - OpenStack Identity (Keystone) để xác thực 
     - OpenStack Image (Glance) để lấy images
     - OpenStack Dashboard (Horizon) để lấy giao diện cho người dùng và người quản trị.
