@@ -281,6 +281,15 @@ ceph auth get-key client.cinder | ssh 10.10.34.165 tee /root/client.cinder
 systemctl stop openstack-cinder-api.service openstack-cinder-volume.service openstack-cinder-scheduler.service
 ```
 
+Khởi tạo 1 uuid mới cho Cinder
+```
+uuidgen
+
+414ba151-4068-40c6-9d7b-84998ce6a5a6
+```
+
+**Lưu ý:** UUID sẽ sử dụng cho tất cả các COM nên chỉ tạo 1 lần đầu tiên
+
 > ## Trên node CTL1
 Phân quyền
 ```
@@ -473,20 +482,12 @@ Kiểm tra tương tự CTL1, CTL2
 > ## Thực hiện trên các node COM
 
 > ### Trên node COM1
-Khởi tạo 1 uuid mới cho Cinder
-```
-uuidgen
-
-8bf533a8-80b0-42f3-9d6e-1ccd2dfda989
-```
-
-**Lưu ý:** UUID sẽ sử dụng cho tất cả các COM nên chỉ tạo 1 lần đầu tiên
 
 Tạo file xml cho phép Ceph RBD (Rados Block Device) xác thực với libvirt thông qua uuid vừa tạo
 ```
 cat > ceph-secret.xml <<EOF
 <secret ephemeral='no' private='no'>
-<uuid>8bf533a8-80b0-42f3-9d6e-1ccd2dfda989</uuid>
+<uuid>414ba151-4068-40c6-9d7b-84998ce6a5a6</uuid>
 <usage type='ceph'>
 	<name>client.cinder secret</name>
 </usage>
@@ -497,12 +498,12 @@ sudo virsh secret-define --file ceph-secret.xml
 ```
 Output:
 ```
-Secret 8bf533a8-80b0-42f3-9d6e-1ccd2dfda989 created
+Secret 414ba151-4068-40c6-9d7b-84998ce6a5a6 created
 ```
 
 Gán giá trị của `client.cinder` cho `uuid`
 ```
-virsh secret-set-value --secret 8bf533a8-80b0-42f3-9d6e-1ccd2dfda989 --base64 $(cat /root/client.cinder)
+virsh secret-set-value --secret 414ba151-4068-40c6-9d7b-84998ce6a5a6 --base64 $(cat /root/client.cinder)
 ```
 Output
 ```
@@ -520,7 +521,7 @@ Tạo file xml cho phép Ceph RBD (Rados Block Device) xác thực với libvirt
 ```
 cat > ceph-secret.xml <<EOF
 <secret ephemeral='no' private='no'>
-<uuid>8bf533a8-80b0-42f3-9d6e-1ccd2dfda989</uuid>
+<uuid>414ba151-4068-40c6-9d7b-84998ce6a5a6</uuid>
 <usage type='ceph'>
 	<name>client.cinder secret</name>
 </usage>
@@ -531,12 +532,12 @@ sudo virsh secret-define --file ceph-secret.xml
 ```
 Output:
 ```
-Secret 8bf533a8-80b0-42f3-9d6e-1ccd2dfda989 created
+Secret 414ba151-4068-40c6-9d7b-84998ce6a5a6 created
 ```
 
 Gán giá trị của `client.cinder` cho `uuid`
 ```
-virsh secret-set-value --secret 8bf533a8-80b0-42f3-9d6e-1ccd2dfda989 --base64 $(cat /root/client.cinder)
+virsh secret-set-value --secret 414ba151-4068-40c6-9d7b-84998ce6a5a6 --base64 $(cat /root/client.cinder)
 ```
 Output
 ```
