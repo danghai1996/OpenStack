@@ -2,6 +2,8 @@
 
 [1. Tổng quan về project Nova](./01-tongquan_nova.md)
 
+[2. File cấu hình Nova](./02-nova-config-file.md)
+
 [3. Quá trình khởi tạo máy ảo](./03-quatrinh_khoitao_mayao.md)
 
 [4. File log của Nova](./04-file_log__nova.md)
