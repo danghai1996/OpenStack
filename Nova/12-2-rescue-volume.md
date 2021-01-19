@@ -1,5 +1,7 @@
 # Rescue - VM boot từ Volume
 
+**Lưu ý:** Không nên thực hiện cách này do phải thao tác với databases của Openstack.
+
 ### Cách thức thực hiện:
 - Chỉnh sửa DB của OpenStack để gỡ được volume boot khỏi máy ảo.
 - Gắn 1 volume khác có sẵn SystemRescueCD vào máy ảo .

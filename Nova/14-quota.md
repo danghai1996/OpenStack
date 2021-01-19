@@ -67,11 +67,5 @@ Show quota project
 openstack quota show <project_name | project_ID>
 ```
 
-
-
-
-
-
-
 # Xem thêm
 - https://docs.openstack.org/nova/train/admin/quotas.html

@@ -27,3 +27,5 @@
 [12.2. Rescue máy ảo boot từ volume](./12-2-rescue-volume.md)
 
 [13. Evacuate máy ảo](./13-evacuate.md)
+
+[14. Quota](./14-quota.md)

@@ -1,7 +1,7 @@
 # Nova Placement và Nova Conductor
 
 ## 1. Nova placement
-Dịch vụ API vị trí được giới thiệu trong bản phát hành Newton 14.0.0 trong kho lưu trữ nova và được trích xuất vào kho lưu trữ vị trí trong bản phát hành Stein 19.0.0.
+Dịch vụ API placement được giới thiệu trong bản phát hành Newton 14.0.0 trong kho lưu trữ nova và được trích xuất vào kho lưu trữ vị trí trong bản phát hành Stein 19.0.0.
 
 Gồm có một REST API và data model sử dụng cho việc theo dõi các tài nguyên đã sử dụng và chưa được sử dụng giữa các loại tài nguyên khác nhau.
 
