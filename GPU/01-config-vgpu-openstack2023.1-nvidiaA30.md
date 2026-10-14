@@ -215,7 +215,7 @@ openstack flavor create --vcpus 8 --ram 16384 --disk 0 --property "resources:VGP
 
 Khởi tạo máy ảo từ flavor vừa tạo. Sau đó truy cập máy ảo kiểm tra sẽ thấy vgpu được gán vào máy ảo tương tự dưới đây. (Sau khi cài driver cho máy ảo, kiểm tra bằng lệnh `nvidia-smi`)
 
-![](..\images\GPU\vgpu01.jpg)
+![](../images/GPU/vgpu01.jpg)
     
 ## Tham khảo
 - https://docs.openstack.org/nova/latest/admin/virtual-gpu.html
