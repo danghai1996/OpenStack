@@ -154,6 +154,13 @@ ls /sys/class/mdev_bus/0000:31:00.0/mdev_supported_types
 nvidia-684 nvidia-xxx nvidia-xxx nvidia-xxx ...
 ```
 
+Xem thông tin cách phân chia vGPU của từng type. Thực hiện xem chi tiết theo từng thư mục vgpu type:
+```bash
+cat /sys/bus/pci/devices/0000:31:00.0/mdev_supported_types/nvidia-684/name
+
+cat /sys/bus/pci/devices/0000:31:00.0/mdev_supported_types/nvidia-684/available_instances
+```
+
 Update config nova-compute: `/etc/kolla/nova-compute/nova.conf`
 ```bash
 # Config vGPU
