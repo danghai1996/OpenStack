@@ -308,7 +308,7 @@ Tạo máy ảo từ flavor vừa tạo ở trên.
     ⇒ Trên host chỉ còn hiển thị 3/4 GPU
 
 Khi hết GPU trên host computeGPU, thì kết quả lệnh `nvidia-smi` trên host sẽ thông báo như dưới đây:
-```
+```bash
 root@compute-gpu:~# nvidia-smi
 Failed to initialize NVML: No supported GPUs were found
 Unable to determine the number of GPUs
