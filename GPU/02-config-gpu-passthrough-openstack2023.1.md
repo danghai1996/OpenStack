@@ -313,3 +313,6 @@ root@compute-gpu:~# nvidia-smi
 Failed to initialize NVML: No supported GPUs were found
 Unable to determine the number of GPUs
 ```
+
+## Tham khảo
+- https://docs.openstack.org/nova/latest/admin/pci-passthrough.html
