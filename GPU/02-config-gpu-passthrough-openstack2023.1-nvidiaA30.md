@@ -316,3 +316,4 @@ Unable to determine the number of GPUs
 
 ## Tham khảo
 - https://docs.openstack.org/nova/latest/admin/pci-passthrough.html
+- https://github.com/vinhducnguyen1708/Tim-hieu-OpenStack/tree/master/docs/GPU-Openstack

@@ -219,3 +219,4 @@ Khởi tạo máy ảo từ flavor vừa tạo. Sau đó truy cập máy ảo ki
     
 ## Tham khảo
 - https://docs.openstack.org/nova/latest/admin/virtual-gpu.html
+- https://github.com/vinhducnguyen1708/Tim-hieu-OpenStack/tree/master/docs/GPU-Openstack
