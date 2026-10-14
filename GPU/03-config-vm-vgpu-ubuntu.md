@@ -17,6 +17,10 @@
 
 💡 Cấu hình này có thể không còn phù hợp với các môi trường mới hơn như Ubuntu 24.04 hay các loại card GPU thế hệ mới hơn.
 
+## 0. Đăng ký license trial vGPU NVIDIA
+
+Link: https://www.nvidia.com/en-us/data-center/resources/vgpu-evaluation/
+
 ## 1. Cài đặt Driver:
 > Thực hiện trên máy ảo vm-vGPU
 
